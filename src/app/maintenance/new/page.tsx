@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { MaintenanceWizard } from '@/components/maintenance/maintenance-wizard';
@@ -13,7 +13,7 @@ export const dynamic = 'force-dynamic';
 type Vehicle = Database['public']['Tables']['mt_vehicles']['Row'];
 type MaintenanceType = Database['public']['Tables']['mt_maintenance_types']['Row'];
 
-export default function NewMaintenancePage() {
+function NewMaintenanceContent() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState<MaintenanceType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,5 +106,22 @@ export default function NewMaintenancePage() {
         onComplete={handleComplete}
       />
     </ProtectedRoute>
+  );
+}
+
+export default function NewMaintenancePage() {
+  return (
+    <Suspense fallback={
+      <ProtectedRoute>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="mt-2 text-sm text-gray-500">Loading...</p>
+          </div>
+        </div>
+      </ProtectedRoute>
+    }>
+      <NewMaintenanceContent />
+    </Suspense>
   );
 }
