@@ -8,6 +8,8 @@ import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/types/database';
 
+export const dynamic = 'force-dynamic';
+
 type Vehicle = Database['public']['Tables']['mt_vehicles']['Row'];
 type MaintenanceType = Database['public']['Tables']['mt_maintenance_types']['Row'];
 

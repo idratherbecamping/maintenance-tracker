@@ -12,36 +12,46 @@ import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/types/database';
 
-const reminderRuleSchema = z.object({
-  rule_name: z.string().min(1, 'Rule name is required'),
-  description: z.string().optional(),
-  vehicle_id: z.string().optional(),
-  maintenance_type_id: z.string().optional(),
-  custom_type: z.string().optional(),
-  trigger_type: z.enum(['mileage_interval', 'time_interval', 'mileage_since_last', 'time_since_last']),
-  mileage_interval: z.number().optional(),
-  mileage_threshold: z.number().optional(),
-  time_interval_days: z.number().optional(),
-  time_threshold_days: z.number().optional(),
-  lead_time_days: z.number().min(0, 'Lead time must be 0 or greater').default(7),
-  priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
-}).refine((data) => {
-  // Require maintenance type or custom type
-  if (!data.maintenance_type_id && !data.custom_type) {
-    return false;
-  }
-  
-  // Validate trigger-specific fields
-  if (data.trigger_type === 'mileage_interval' && !data.mileage_interval) return false;
-  if (data.trigger_type === 'time_interval' && !data.time_interval_days) return false;
-  if (data.trigger_type === 'mileage_since_last' && !data.mileage_threshold) return false;
-  if (data.trigger_type === 'time_since_last' && !data.time_threshold_days) return false;
-  
-  return true;
-}, {
-  message: "Please complete all required fields for the selected trigger type",
-  path: ["trigger_type"]
-});
+const reminderRuleSchema = z
+  .object({
+    rule_name: z.string().min(1, 'Rule name is required'),
+    description: z.string().optional(),
+    vehicle_id: z.string().optional(),
+    maintenance_type_id: z.string().optional(),
+    custom_type: z.string().optional(),
+    trigger_type: z.enum([
+      'mileage_interval',
+      'time_interval',
+      'mileage_since_last',
+      'time_since_last',
+    ]),
+    mileage_interval: z.number().optional(),
+    mileage_threshold: z.number().optional(),
+    time_interval_days: z.number().optional(),
+    time_threshold_days: z.number().optional(),
+    lead_time_days: z.number().min(0, 'Lead time must be 0 or greater').default(7),
+    priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+  })
+  .refine(
+    (data) => {
+      // Require maintenance type or custom type
+      if (!data.maintenance_type_id && !data.custom_type) {
+        return false;
+      }
+
+      // Validate trigger-specific fields
+      if (data.trigger_type === 'mileage_interval' && !data.mileage_interval) return false;
+      if (data.trigger_type === 'time_interval' && !data.time_interval_days) return false;
+      if (data.trigger_type === 'mileage_since_last' && !data.mileage_threshold) return false;
+      if (data.trigger_type === 'time_since_last' && !data.time_threshold_days) return false;
+
+      return true;
+    },
+    {
+      message: 'Please complete all required fields for the selected trigger type',
+      path: ['trigger_type'],
+    }
+  );
 
 type ReminderRuleForm = z.infer<typeof reminderRuleSchema>;
 
@@ -146,9 +156,7 @@ export default function NewReminderRulePage() {
         is_active: true,
       };
 
-      const { error } = await supabase
-        .from('mt_reminder_rules')
-        .insert([reminderRule]);
+      const { error } = await supabase.from('mt_reminder_rules').insert([reminderRule]);
 
       if (error) throw error;
 
@@ -176,8 +184,16 @@ export default function NewReminderRulePage() {
                   </li>
                   <li>
                     <div className="flex items-center">
-                      <svg className="h-5 w-5 flex-shrink-0 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 flex-shrink-0 text-gray-300"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       <span className="ml-4 text-sm font-medium text-gray-500">New Rule</span>
                     </div>
@@ -192,7 +208,7 @@ export default function NewReminderRulePage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
               <div className="bg-white shadow-sm rounded-lg p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-6">Rule Details</h2>
-                
+
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div className="sm:col-span-2">
                     <label htmlFor="rule_name" className="block text-sm font-medium text-gray-700">
@@ -210,7 +226,10 @@ export default function NewReminderRulePage() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="description"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Description
                     </label>
                     <textarea
@@ -257,10 +276,13 @@ export default function NewReminderRulePage() {
 
               <div className="bg-white shadow-sm rounded-lg p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-6">Maintenance Type</h2>
-                
+
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="maintenance_type_id" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="maintenance_type_id"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Maintenance Type
                     </label>
                     <select
@@ -297,7 +319,10 @@ export default function NewReminderRulePage() {
 
                   {showCustomType && (
                     <div>
-                      <label htmlFor="custom_type" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="custom_type"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Custom Type
                       </label>
                       <input
@@ -313,10 +338,13 @@ export default function NewReminderRulePage() {
 
               <div className="bg-white shadow-sm rounded-lg p-6">
                 <h2 className="text-lg font-medium text-gray-900 mb-6">Trigger Conditions</h2>
-                
+
                 <div className="space-y-6">
                   <div>
-                    <label htmlFor="trigger_type" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="trigger_type"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Trigger Type *
                     </label>
                     <select
@@ -324,7 +352,9 @@ export default function NewReminderRulePage() {
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     >
                       <option value="">Select trigger type</option>
-                      <option value="mileage_interval">Mileage Interval (e.g., every 5,000 miles)</option>
+                      <option value="mileage_interval">
+                        Mileage Interval (e.g., every 5,000 miles)
+                      </option>
                       <option value="time_interval">Time Interval (e.g., every 6 months)</option>
                       <option value="mileage_since_last">Mileage Since Last Service</option>
                       <option value="time_since_last">Time Since Last Service</option>
@@ -336,7 +366,10 @@ export default function NewReminderRulePage() {
 
                   {triggerType === 'mileage_interval' && (
                     <div>
-                      <label htmlFor="mileage_interval" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="mileage_interval"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Mileage Interval *
                       </label>
                       <div className="mt-1 relative rounded-md shadow-sm">
@@ -355,7 +388,10 @@ export default function NewReminderRulePage() {
 
                   {triggerType === 'time_interval' && (
                     <div>
-                      <label htmlFor="time_interval_days" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="time_interval_days"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Time Interval *
                       </label>
                       <div className="mt-1 relative rounded-md shadow-sm">
@@ -374,7 +410,10 @@ export default function NewReminderRulePage() {
 
                   {triggerType === 'mileage_since_last' && (
                     <div>
-                      <label htmlFor="mileage_threshold" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="mileage_threshold"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Mileage Threshold *
                       </label>
                       <div className="mt-1 relative rounded-md shadow-sm">
@@ -393,7 +432,10 @@ export default function NewReminderRulePage() {
 
                   {triggerType === 'time_since_last' && (
                     <div>
-                      <label htmlFor="time_threshold_days" className="block text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor="time_threshold_days"
+                        className="block text-sm font-medium text-gray-700"
+                      >
                         Time Threshold *
                       </label>
                       <div className="mt-1 relative rounded-md shadow-sm">
@@ -411,7 +453,10 @@ export default function NewReminderRulePage() {
                   )}
 
                   <div>
-                    <label htmlFor="lead_time_days" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="lead_time_days"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Lead Time
                     </label>
                     <div className="mt-1 relative rounded-md shadow-sm">

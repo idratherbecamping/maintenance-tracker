@@ -36,7 +36,8 @@ export function ReminderRulesList() {
     try {
       const { data, error } = await supabase
         .from('mt_reminder_rules')
-        .select(`
+        .select(
+          `
           *,
           mt_vehicles (
             make,
@@ -47,7 +48,8 @@ export function ReminderRulesList() {
           mt_maintenance_types (
             name
           )
-        `)
+        `
+        )
         .eq('company_id', profile.company_id)
         .order('created_at', { ascending: false });
 
@@ -68,11 +70,11 @@ export function ReminderRulesList() {
         .eq('id', ruleId);
 
       if (error) throw error;
-      
+
       // Update local state
-      setRules(prev => prev.map(rule => 
-        rule.id === ruleId ? { ...rule, is_active: !isActive } : rule
-      ));
+      setRules((prev) =>
+        prev.map((rule) => (rule.id === ruleId ? { ...rule, is_active: !isActive } : rule))
+      );
     } catch (error) {
       console.error('Error updating rule status:', error);
     }
@@ -82,15 +84,12 @@ export function ReminderRulesList() {
     if (!confirm('Are you sure you want to delete this reminder rule?')) return;
 
     try {
-      const { error } = await supabase
-        .from('mt_reminder_rules')
-        .delete()
-        .eq('id', ruleId);
+      const { error } = await supabase.from('mt_reminder_rules').delete().eq('id', ruleId);
 
       if (error) throw error;
-      
+
       // Remove from local state
-      setRules(prev => prev.filter(rule => rule.id !== ruleId));
+      setRules((prev) => prev.filter((rule) => rule.id !== ruleId));
     } catch (error) {
       console.error('Error deleting rule:', error);
     }
@@ -113,11 +112,16 @@ export function ReminderRulesList() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical':
+        return 'bg-red-100 text-red-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -168,30 +172,42 @@ export function ReminderRulesList() {
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-3 mb-2">
-                <h3 className="text-lg font-medium text-gray-900">
-                  {rule.rule_name}
-                </h3>
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(rule.priority)}`}>
+                <h3 className="text-lg font-medium text-gray-900">{rule.rule_name}</h3>
+                <span
+                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(rule.priority)}`}
+                >
                   {rule.priority}
                 </span>
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                  rule.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                }`}>
+                <span
+                  className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    rule.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
                   {rule.is_active ? 'Active' : 'Inactive'}
                 </span>
               </div>
 
               <div className="text-sm text-gray-600 space-y-1">
-                <p><strong>Maintenance Type:</strong> {rule.mt_maintenance_types?.name || rule.custom_type || 'Any'}</p>
-                <p><strong>Vehicle:</strong> {
-                  rule.mt_vehicles 
+                <p>
+                  <strong>Maintenance Type:</strong>{' '}
+                  {rule.mt_maintenance_types?.name || rule.custom_type || 'Any'}
+                </p>
+                <p>
+                  <strong>Vehicle:</strong>{' '}
+                  {rule.mt_vehicles
                     ? `${rule.mt_vehicles.year} ${rule.mt_vehicles.make} ${rule.mt_vehicles.model}`
-                    : 'All vehicles'
-                }</p>
-                <p><strong>Trigger:</strong> {getTriggerDescription(rule)}</p>
-                <p><strong>Lead Time:</strong> {rule.lead_time_days} days before due</p>
+                    : 'All vehicles'}
+                </p>
+                <p>
+                  <strong>Trigger:</strong> {getTriggerDescription(rule)}
+                </p>
+                <p>
+                  <strong>Lead Time:</strong> {rule.lead_time_days} days before due
+                </p>
                 {rule.description && (
-                  <p><strong>Description:</strong> {rule.description}</p>
+                  <p>
+                    <strong>Description:</strong> {rule.description}
+                  </p>
                 )}
               </div>
             </div>
@@ -200,8 +216,8 @@ export function ReminderRulesList() {
               <button
                 onClick={() => toggleRuleStatus(rule.id, rule.is_active)}
                 className={`inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded ${
-                  rule.is_active 
-                    ? 'text-red-700 bg-white hover:bg-red-50' 
+                  rule.is_active
+                    ? 'text-red-700 bg-white hover:bg-red-50'
                     : 'text-green-700 bg-white hover:bg-green-50'
                 }`}
               >

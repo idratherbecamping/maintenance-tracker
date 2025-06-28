@@ -149,14 +149,18 @@ export default function ProfilePage() {
             </div>
 
             {message && (
-              <div className={`mb-6 rounded-md p-4 ${
-                message.type === 'success' 
-                  ? 'bg-green-50 border border-green-200' 
-                  : 'bg-red-50 border border-red-200'
-              }`}>
-                <p className={`text-sm ${
-                  message.type === 'success' ? 'text-green-700' : 'text-red-700'
-                }`}>
+              <div
+                className={`mb-6 rounded-md p-4 ${
+                  message.type === 'success'
+                    ? 'bg-green-50 border border-green-200'
+                    : 'bg-red-50 border border-red-200'
+                }`}
+              >
+                <p
+                  className={`text-sm ${
+                    message.type === 'success' ? 'text-green-700' : 'text-red-700'
+                  }`}
+                >
                   {message.text}
                 </p>
               </div>
@@ -167,7 +171,7 @@ export default function ProfilePage() {
               <div className="bg-white shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <h2 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h2>
-                  
+
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -214,27 +218,25 @@ export default function ProfilePage() {
               <div className="bg-white shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <h2 className="text-lg font-medium text-gray-900 mb-4">Company Information</h2>
-                  
+
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Role
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700">Role</label>
                       <div className="mt-1">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                          profile.role === 'owner' 
-                            ? 'bg-purple-100 text-purple-800' 
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                            profile.role === 'owner'
+                              ? 'bg-purple-100 text-purple-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
                           {profile.role}
                         </span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Company ID
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700">Company ID</label>
                       <div className="mt-1">
                         <code className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
                           {profile.company_id}
@@ -249,12 +251,10 @@ export default function ProfilePage() {
               <div className="bg-white shadow rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <h2 className="text-lg font-medium text-gray-900 mb-4">Security</h2>
-                  
+
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Password
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700">Password</label>
                       <div className="mt-1 flex items-center space-x-4">
                         <span className="text-sm text-gray-500">••••••••</span>
                         <button

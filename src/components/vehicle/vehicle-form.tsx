@@ -14,7 +14,10 @@ type VehicleInsert = Database['public']['Tables']['mt_vehicles']['Insert'];
 const vehicleSchema = z.object({
   make: z.string().min(1, 'Make is required').max(100, 'Make is too long'),
   model: z.string().min(1, 'Model is required').max(100, 'Model is too long'),
-  year: z.number().min(1900, 'Year must be valid').max(new Date().getFullYear() + 1, 'Year cannot be in the future'),
+  year: z
+    .number()
+    .min(1900, 'Year must be valid')
+    .max(new Date().getFullYear() + 1, 'Year cannot be in the future'),
   vin: z.string().max(17, 'VIN is too long').optional().or(z.literal('')),
   license_plate: z.string().max(20, 'License plate is too long').optional().or(z.literal('')),
   current_mileage: z.number().min(0, 'Mileage must be positive'),
@@ -27,7 +30,9 @@ type VehicleFormData = z.infer<typeof vehicleSchema>;
 
 interface VehicleFormProps {
   initialData?: Partial<VehicleFormData> & { image_url?: string | null };
-  onSubmit: (data: Omit<VehicleInsert, 'company_id'> & { imageFile?: File | null; removeImage?: boolean }) => void;
+  onSubmit: (
+    data: Omit<VehicleInsert, 'company_id'> & { imageFile?: File | null; removeImage?: boolean }
+  ) => void;
   loading: boolean;
   submitLabel: string;
 }
@@ -67,7 +72,10 @@ export function VehicleForm({ initialData, onSubmit, loading, submitLabel }: Veh
   };
 
   const onFormSubmit = (data: VehicleFormData) => {
-    const submitData: Omit<VehicleInsert, 'company_id'> & { imageFile?: File | null; removeImage?: boolean } = {
+    const submitData: Omit<VehicleInsert, 'company_id'> & {
+      imageFile?: File | null;
+      removeImage?: boolean;
+    } = {
       make: data.make,
       model: data.model,
       year: data.year,
@@ -96,9 +104,7 @@ export function VehicleForm({ initialData, onSubmit, loading, submitLabel }: Veh
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             placeholder="e.g., Toyota, Ford, Honda"
           />
-          {errors.make && (
-            <p className="mt-1 text-sm text-red-600">{errors.make.message}</p>
-          )}
+          {errors.make && <p className="mt-1 text-sm text-red-600">{errors.make.message}</p>}
         </div>
 
         <div>
@@ -111,9 +117,7 @@ export function VehicleForm({ initialData, onSubmit, loading, submitLabel }: Veh
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             placeholder="e.g., Camry, F-150, Civic"
           />
-          {errors.model && (
-            <p className="mt-1 text-sm text-red-600">{errors.model.message}</p>
-          )}
+          {errors.model && <p className="mt-1 text-sm text-red-600">{errors.model.message}</p>}
         </div>
 
         <div>
@@ -127,9 +131,7 @@ export function VehicleForm({ initialData, onSubmit, loading, submitLabel }: Veh
             min="1900"
             max={new Date().getFullYear() + 1}
           />
-          {errors.year && (
-            <p className="mt-1 text-sm text-red-600">{errors.year.message}</p>
-          )}
+          {errors.year && <p className="mt-1 text-sm text-red-600">{errors.year.message}</p>}
         </div>
 
         <div>
@@ -159,9 +161,7 @@ export function VehicleForm({ initialData, onSubmit, loading, submitLabel }: Veh
             placeholder="17-character VIN"
             maxLength={17}
           />
-          {errors.vin && (
-            <p className="mt-1 text-sm text-red-600">{errors.vin.message}</p>
-          )}
+          {errors.vin && <p className="mt-1 text-sm text-red-600">{errors.vin.message}</p>}
         </div>
 
         <div>
@@ -230,9 +230,7 @@ export function VehicleForm({ initialData, onSubmit, loading, submitLabel }: Veh
 
       {/* Vehicle Image */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Vehicle Image
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Vehicle Image</label>
         <ImageUpload
           currentImage={getImageUrl('vehicle-images', initialData?.image_url)}
           onImageChange={handleImageChange}

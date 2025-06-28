@@ -37,7 +37,7 @@ export function EmployeeStep({ formData, updateFormData, onNext, onPrevious }: E
 
       if (error) throw error;
       setEmployees(data || []);
-      
+
       // Auto-select current user if not already selected
       if (!formData.employeeId && profile.id) {
         updateFormData({ employeeId: profile.id });
@@ -71,9 +71,7 @@ export function EmployeeStep({ formData, updateFormData, onNext, onPrevious }: E
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           Who is performing this maintenance?
         </h2>
-        <p className="text-gray-600">
-          Select the person responsible for this work.
-        </p>
+        <p className="text-gray-600">Select the person responsible for this work.</p>
       </div>
 
       <div className="space-y-3">
@@ -99,9 +97,7 @@ export function EmployeeStep({ formData, updateFormData, onNext, onPrevious }: E
                   )}
                 </div>
               </div>
-              <div className="text-2xl">
-                👤
-              </div>
+              <div className="text-2xl">👤</div>
             </div>
           </button>
         ))}
@@ -113,7 +109,12 @@ export function EmployeeStep({ formData, updateFormData, onNext, onPrevious }: E
           className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
           <svg className="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5 5-5M18 12H6" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 17l-5-5 5-5M18 12H6"
+            />
           </svg>
           Back
         </button>
@@ -124,8 +125,18 @@ export function EmployeeStep({ formData, updateFormData, onNext, onPrevious }: E
             className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
           >
             Continue
-            <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5-5 5M6 12h12" />
+            <svg
+              className="ml-2 -mr-1 w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5-5 5M6 12h12"
+              />
             </svg>
           </button>
         )}

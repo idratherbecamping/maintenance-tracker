@@ -10,11 +10,11 @@ interface RecommendationsStepProps {
   onPrevious: () => void;
 }
 
-export function RecommendationsStep({ 
-  formData, 
-  updateFormData, 
-  onNext, 
-  onPrevious 
+export function RecommendationsStep({
+  formData,
+  updateFormData,
+  onNext,
+  onPrevious,
 }: RecommendationsStepProps) {
   const [recommendations, setRecommendations] = useState(formData.recommendations);
   const [currentRecommendation, setCurrentRecommendation] = useState({
@@ -58,12 +58,8 @@ export function RecommendationsStep({
   return (
     <div className="bg-white rounded-lg shadow-sm p-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Any future maintenance reminders?
-        </h2>
-        <p className="text-gray-600">
-          Add reminders for upcoming maintenance needs (optional).
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Any future maintenance reminders?</h2>
+        <p className="text-gray-600">Add reminders for upcoming maintenance needs (optional).</p>
       </div>
 
       <div className="max-w-2xl mx-auto">
@@ -73,7 +69,10 @@ export function RecommendationsStep({
             <h3 className="text-lg font-medium text-gray-900 mb-3">Added Reminders</h3>
             <div className="space-y-3">
               {recommendations.map((rec, index) => (
-                <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-start justify-between p-3 bg-gray-50 rounded-lg"
+                >
                   <div className="flex-1">
                     <p className="text-gray-900">{rec.description}</p>
                     {rec.recommendedDate && (
@@ -98,16 +97,21 @@ export function RecommendationsStep({
         <div className="mb-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="recommendation" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="recommendation"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Maintenance Recommendation
               </label>
               <textarea
                 id="recommendation"
                 value={currentRecommendation.description}
-                onChange={(e) => setCurrentRecommendation({
-                  ...currentRecommendation,
-                  description: e.target.value
-                })}
+                onChange={(e) =>
+                  setCurrentRecommendation({
+                    ...currentRecommendation,
+                    description: e.target.value,
+                  })
+                }
                 onKeyPress={handleKeyPress}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                 rows={2}
@@ -116,17 +120,22 @@ export function RecommendationsStep({
             </div>
 
             <div>
-              <label htmlFor="recommendedDate" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="recommendedDate"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Recommended Date (Optional)
               </label>
               <input
                 id="recommendedDate"
                 type="date"
                 value={currentRecommendation.recommendedDate}
-                onChange={(e) => setCurrentRecommendation({
-                  ...currentRecommendation,
-                  recommendedDate: e.target.value
-                })}
+                onChange={(e) =>
+                  setCurrentRecommendation({
+                    ...currentRecommendation,
+                    recommendedDate: e.target.value,
+                  })
+                }
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 min={new Date().toISOString().split('T')[0]}
               />
@@ -149,10 +158,12 @@ export function RecommendationsStep({
             {commonRecommendations.map((rec, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentRecommendation({
-                  ...currentRecommendation,
-                  description: rec
-                })}
+                onClick={() =>
+                  setCurrentRecommendation({
+                    ...currentRecommendation,
+                    description: rec,
+                  })
+                }
                 className="text-left text-sm text-gray-600 p-2 rounded border hover:bg-gray-50 transition-colors"
               >
                 {rec}
@@ -172,7 +183,12 @@ export function RecommendationsStep({
           className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
           <svg className="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5 5-5M18 12H6" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 17l-5-5 5-5M18 12H6"
+            />
           </svg>
           Back
         </button>
@@ -183,7 +199,12 @@ export function RecommendationsStep({
         >
           Continue
           <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5-5 5M6 12h12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 7l5 5-5 5M6 12h12"
+            />
           </svg>
         </button>
       </div>

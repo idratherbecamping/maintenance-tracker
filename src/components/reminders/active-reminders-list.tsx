@@ -36,7 +36,8 @@ export function ActiveRemindersList() {
     try {
       const { data, error } = await supabase
         .from('mt_active_reminders')
-        .select(`
+        .select(
+          `
           *,
           mt_vehicles!inner (
             make,
@@ -49,7 +50,8 @@ export function ActiveRemindersList() {
             rule_name,
             priority
           )
-        `)
+        `
+        )
         .eq('mt_vehicles.company_id', profile.company_id)
         .in('status', ['active', 'snoozed'])
         .order('due_date', { ascending: true });
@@ -74,9 +76,9 @@ export function ActiveRemindersList() {
         .eq('id', reminderId);
 
       if (error) throw error;
-      
+
       // Remove from local state
-      setReminders(prev => prev.filter(r => r.id !== reminderId));
+      setReminders((prev) => prev.filter((r) => r.id !== reminderId));
     } catch (error) {
       console.error('Error dismissing reminder:', error);
     }
@@ -86,7 +88,7 @@ export function ActiveRemindersList() {
     try {
       const snoozeDate = new Date();
       snoozeDate.setDate(snoozeDate.getDate() + days);
-      
+
       const { error } = await supabase
         .from('mt_active_reminders')
         .update({
@@ -96,13 +98,15 @@ export function ActiveRemindersList() {
         .eq('id', reminderId);
 
       if (error) throw error;
-      
+
       // Update local state
-      setReminders(prev => prev.map(r => 
-        r.id === reminderId 
-          ? { ...r, status: 'snoozed', snoozed_until: snoozeDate.toISOString().split('T')[0] }
-          : r
-      ));
+      setReminders((prev) =>
+        prev.map((r) =>
+          r.id === reminderId
+            ? { ...r, status: 'snoozed', snoozed_until: snoozeDate.toISOString().split('T')[0] }
+            : r
+        )
+      );
     } catch (error) {
       console.error('Error snoozing reminder:', error);
     }
@@ -115,11 +119,16 @@ export function ActiveRemindersList() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical':
+        return 'bg-red-100 text-red-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -181,10 +190,10 @@ export function ActiveRemindersList() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {reminder.title}
-                  </h3>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(reminder.priority)}`}>
+                  <h3 className="text-lg font-medium text-gray-900">{reminder.title}</h3>
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(reminder.priority)}`}
+                  >
                     {reminder.priority}
                   </span>
                   {reminder.status === 'snoozed' && (
@@ -195,16 +204,28 @@ export function ActiveRemindersList() {
                 </div>
 
                 <div className="text-sm text-gray-600 space-y-1">
-                  <p><strong>Vehicle:</strong> {reminder.mt_vehicles.year} {reminder.mt_vehicles.make} {reminder.mt_vehicles.model}</p>
+                  <p>
+                    <strong>Vehicle:</strong> {reminder.mt_vehicles.year}{' '}
+                    {reminder.mt_vehicles.make} {reminder.mt_vehicles.model}
+                  </p>
                   {reminder.mt_vehicles.license_plate && (
-                    <p><strong>License:</strong> {reminder.mt_vehicles.license_plate}</p>
+                    <p>
+                      <strong>License:</strong> {reminder.mt_vehicles.license_plate}
+                    </p>
                   )}
-                  <p><strong>Due Date:</strong> {formatDate(reminder.due_date)}</p>
+                  <p>
+                    <strong>Due Date:</strong> {formatDate(reminder.due_date)}
+                  </p>
                   {reminder.target_mileage && (
-                    <p><strong>Target Mileage:</strong> {reminder.target_mileage.toLocaleString()} miles</p>
+                    <p>
+                      <strong>Target Mileage:</strong> {reminder.target_mileage.toLocaleString()}{' '}
+                      miles
+                    </p>
                   )}
                   {reminder.description && (
-                    <p><strong>Description:</strong> {reminder.description}</p>
+                    <p>
+                      <strong>Description:</strong> {reminder.description}
+                    </p>
                   )}
                 </div>
 
@@ -212,10 +233,13 @@ export function ActiveRemindersList() {
                   <div className="mt-3">
                     {isOverdue ? (
                       <span className="text-red-600 font-medium">
-                        Overdue by {Math.abs(daysUntilDue)} day{Math.abs(daysUntilDue) !== 1 ? 's' : ''}
+                        Overdue by {Math.abs(daysUntilDue)} day
+                        {Math.abs(daysUntilDue) !== 1 ? 's' : ''}
                       </span>
                     ) : (
-                      <span className={`font-medium ${isDueSoon ? 'text-yellow-600' : 'text-gray-600'}`}>
+                      <span
+                        className={`font-medium ${isDueSoon ? 'text-yellow-600' : 'text-gray-600'}`}
+                      >
                         Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''}
                       </span>
                     )}

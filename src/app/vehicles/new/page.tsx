@@ -19,7 +19,12 @@ export default function NewVehiclePage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const handleSubmit = async (vehicleData: Omit<VehicleInsert, 'company_id'> & { imageFile?: File | null; removeImage?: boolean }) => {
+  const handleSubmit = async (
+    vehicleData: Omit<VehicleInsert, 'company_id'> & {
+      imageFile?: File | null;
+      removeImage?: boolean;
+    }
+  ) => {
     if (!profile?.company_id || !profile?.id) {
       setError('No company ID found');
       return;
@@ -41,13 +46,11 @@ export default function NewVehiclePage() {
       // Create vehicle data without the extra fields
       const { imageFile, removeImage, ...vehicleInsertData } = vehicleData;
 
-      const { error: insertError } = await supabase
-        .from('mt_vehicles')
-        .insert({
-          ...vehicleInsertData,
-          company_id: profile.company_id,
-          image_url: imageUrl,
-        });
+      const { error: insertError } = await supabase.from('mt_vehicles').insert({
+        ...vehicleInsertData,
+        company_id: profile.company_id,
+        image_url: imageUrl,
+      });
 
       if (insertError) throw insertError;
 
@@ -80,11 +83,7 @@ export default function NewVehiclePage() {
                   </div>
                 )}
 
-                <VehicleForm
-                  onSubmit={handleSubmit}
-                  loading={loading}
-                  submitLabel="Add Vehicle"
-                />
+                <VehicleForm onSubmit={handleSubmit} loading={loading} submitLabel="Add Vehicle" />
               </div>
             </div>
           </div>

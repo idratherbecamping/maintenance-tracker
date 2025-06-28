@@ -18,7 +18,7 @@ export function ImageUpload({
   onImageRemove,
   disabled = false,
   className = '',
-  placeholder = 'Click to upload image'
+  placeholder = 'Click to upload image',
 }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(currentImage || null);
   const [dragOver, setDragOver] = useState(false);
@@ -27,7 +27,7 @@ export function ImageUpload({
 
   const handleFileSelect = (file: File) => {
     setError(null);
-    
+
     // Validate file
     const validation = validateImageFile(file);
     if (!validation.valid) {
@@ -78,7 +78,7 @@ export function ImageUpload({
     setError(null);
     onImageChange(null);
     onImageRemove?.();
-    
+
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -124,7 +124,7 @@ export function ImageUpload({
               alt="Preview"
               className="max-w-full max-h-48 mx-auto rounded-lg object-cover"
             />
-            
+
             {/* Remove button */}
             <button
               type="button"
@@ -136,7 +136,12 @@ export function ImageUpload({
               className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
 
@@ -164,21 +169,15 @@ export function ImageUpload({
               />
             </svg>
             <div className="text-sm text-gray-600">
-              <span className="font-medium text-blue-600 hover:text-blue-500">
-                {placeholder}
-              </span>
-              <p className="text-xs text-gray-500 mt-1">
-                PNG, JPG, WebP up to 10MB
-              </p>
+              <span className="font-medium text-blue-600 hover:text-blue-500">{placeholder}</span>
+              <p className="text-xs text-gray-500 mt-1">PNG, JPG, WebP up to 10MB</p>
             </div>
           </div>
         )}
       </div>
 
       {/* Error message */}
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 }

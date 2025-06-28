@@ -10,7 +10,12 @@ interface DescriptionStepProps {
   onPrevious: () => void;
 }
 
-export function DescriptionStep({ formData, updateFormData, onNext, onPrevious }: DescriptionStepProps) {
+export function DescriptionStep({
+  formData,
+  updateFormData,
+  onNext,
+  onPrevious,
+}: DescriptionStepProps) {
   const [description, setDescription] = useState(formData.description || '');
 
   const handleDescriptionChange = (value: string) => {
@@ -28,11 +33,11 @@ export function DescriptionStep({ formData, updateFormData, onNext, onPrevious }
   };
 
   const exampleSuggestions = [
-    "Changed oil and oil filter. Used 5W-30 synthetic oil.",
-    "Rotated all four tires. Checked tire pressure and tread depth.",
-    "Replaced front brake pads and resurfaced rotors. Bled brake system.",
-    "Replaced air filter and cabin filter. Cleaned air intake.",
-    "Full inspection completed. All systems functioning normally.",
+    'Changed oil and oil filter. Used 5W-30 synthetic oil.',
+    'Rotated all four tires. Checked tire pressure and tread depth.',
+    'Replaced front brake pads and resurfaced rotors. Bled brake system.',
+    'Replaced air filter and cabin filter. Cleaned air intake.',
+    'Full inspection completed. All systems functioning normally.',
   ];
 
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -40,12 +45,8 @@ export function DescriptionStep({ formData, updateFormData, onNext, onPrevious }
   return (
     <div className="bg-white rounded-lg shadow-sm p-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Tell us more about the work
-        </h2>
-        <p className="text-gray-600">
-          Add details about what was done (optional but recommended).
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Tell us more about the work</h2>
+        <p className="text-gray-600">Add details about what was done (optional but recommended).</p>
       </div>
 
       <div className="max-w-2xl mx-auto">
@@ -69,7 +70,7 @@ export function DescriptionStep({ formData, updateFormData, onNext, onPrevious }
           >
             {showSuggestions ? 'Hide' : 'Show'} example descriptions
           </button>
-          
+
           {showSuggestions && (
             <div className="mt-3 space-y-2">
               <p className="text-sm text-gray-600 font-medium">Examples:</p>
@@ -97,7 +98,12 @@ export function DescriptionStep({ formData, updateFormData, onNext, onPrevious }
           className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
           <svg className="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5 5-5M18 12H6" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 17l-5-5 5-5M18 12H6"
+            />
           </svg>
           Back
         </button>
@@ -114,8 +120,18 @@ export function DescriptionStep({ formData, updateFormData, onNext, onPrevious }
             className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
           >
             Continue
-            <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5-5 5M6 12h12" />
+            <svg
+              className="ml-2 -mr-1 w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5-5 5M6 12h12"
+              />
             </svg>
           </button>
         </div>

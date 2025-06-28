@@ -14,12 +14,12 @@ interface MileageStepProps {
   selectedVehicle?: Vehicle;
 }
 
-export function MileageStep({ 
-  formData, 
-  updateFormData, 
-  onNext, 
-  onPrevious, 
-  selectedVehicle 
+export function MileageStep({
+  formData,
+  updateFormData,
+  onNext,
+  onPrevious,
+  selectedVehicle,
 }: MileageStepProps) {
   const [mileage, setMileage] = useState(formData.mileage?.toString() || '');
   const [error, setError] = useState('');
@@ -27,7 +27,7 @@ export function MileageStep({
   const handleMileageChange = (value: string) => {
     setMileage(value);
     setError('');
-    
+
     const numericValue = parseInt(value);
     if (!isNaN(numericValue)) {
       updateFormData({ mileage: numericValue });
@@ -36,14 +36,16 @@ export function MileageStep({
 
   const handleNext = () => {
     const numericMileage = parseInt(mileage);
-    
+
     if (!mileage || isNaN(numericMileage)) {
       setError('Please enter a valid mileage');
       return;
     }
 
     if (selectedVehicle && numericMileage < selectedVehicle.current_mileage) {
-      setError(`Mileage cannot be less than current vehicle mileage (${formatNumber(selectedVehicle.current_mileage)})`);
+      setError(
+        `Mileage cannot be less than current vehicle mileage (${formatNumber(selectedVehicle.current_mileage)})`
+      );
       return;
     }
 
@@ -69,12 +71,8 @@ export function MileageStep({
   return (
     <div className="bg-white rounded-lg shadow-sm p-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          What's the current mileage?
-        </h2>
-        <p className="text-gray-600">
-          Enter the vehicle's current odometer reading.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">What's the current mileage?</h2>
+        <p className="text-gray-600">Enter the vehicle's current odometer reading.</p>
         {selectedVehicle && (
           <p className="text-sm text-gray-500 mt-2">
             Last recorded: {formatNumber(selectedVehicle.current_mileage)} miles
@@ -101,9 +99,7 @@ export function MileageStep({
           </div>
         </div>
 
-        {error && (
-          <p className="mt-2 text-sm text-red-600 text-center">{error}</p>
-        )}
+        {error && <p className="mt-2 text-sm text-red-600 text-center">{error}</p>}
 
         <div className="mt-6 text-center text-sm text-gray-500">
           <p>💡 Tip: Check your odometer for the exact reading</p>
@@ -116,7 +112,12 @@ export function MileageStep({
           className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
           <svg className="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5 5-5M18 12H6" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 17l-5-5 5-5M18 12H6"
+            />
           </svg>
           Back
         </button>
@@ -128,7 +129,12 @@ export function MileageStep({
         >
           Continue
           <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5-5 5M6 12h12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 7l5 5-5 5M6 12h12"
+            />
           </svg>
         </button>
       </div>

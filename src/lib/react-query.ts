@@ -26,7 +26,8 @@ export const queryKeys = {
   dashboard: {
     all: ['dashboard'] as const,
     stats: (companyId: string) => ['dashboard', 'stats', companyId] as const,
-    recentMaintenance: (companyId: string) => ['dashboard', 'recent-maintenance', companyId] as const,
+    recentMaintenance: (companyId: string) =>
+      ['dashboard', 'recent-maintenance', companyId] as const,
   },
   vehicles: {
     all: ['vehicles'] as const,
@@ -35,8 +36,10 @@ export const queryKeys = {
   },
   maintenance: {
     all: ['maintenance'] as const,
-    list: (companyId: string, filters?: any) => ['maintenance', 'list', companyId, filters] as const,
-    history: (companyId: string, filters?: any) => ['maintenance', 'history', companyId, filters] as const,
+    list: (companyId: string, filters?: any) =>
+      ['maintenance', 'list', companyId, filters] as const,
+    history: (companyId: string, filters?: any) =>
+      ['maintenance', 'history', companyId, filters] as const,
   },
   analytics: {
     all: ['analytics'] as const,

@@ -48,11 +48,13 @@ export default function VehicleDetailPage() {
       // Fetch maintenance records
       const { data: recordsData, error: recordsError } = await supabase
         .from('mt_maintenance_records')
-        .select(`
+        .select(
+          `
           *,
           mt_users (name),
           mt_maintenance_types (name)
-        `)
+        `
+        )
         .eq('vehicle_id', vehicleId)
         .order('date', { ascending: false });
 
@@ -148,8 +150,18 @@ export default function VehicleDetailPage() {
                   href={`/maintenance/history?vehicle=${vehicle.id}`}
                   className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
                 >
-                  <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <svg
+                    className="mr-2 h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
                   View All Maintenance
                 </Link>
@@ -157,8 +169,18 @@ export default function VehicleDetailPage() {
                   href={`/maintenance/new?vehicle=${vehicle.id}`}
                   className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
                 >
-                  <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  <svg
+                    className="mr-2 h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
                   </svg>
                   Log Maintenance
                 </Link>
@@ -166,8 +188,18 @@ export default function VehicleDetailPage() {
                   href={`/vehicles/${vehicle.id}/edit`}
                   className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                 >
-                  <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  <svg
+                    className="mr-2 h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                    />
                   </svg>
                   Edit Vehicle
                 </Link>
@@ -182,11 +214,15 @@ export default function VehicleDetailPage() {
                     <dl className="space-y-4">
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Current Mileage</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{formatNumber(vehicle.current_mileage)} mi</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {formatNumber(vehicle.current_mileage)} mi
+                        </dd>
                       </div>
                       <div>
                         <dt className="text-sm font-medium text-gray-500">Asset Value</dt>
-                        <dd className="mt-1 text-sm text-gray-900">{formatCurrency(vehicle.asset_value)}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                          {formatCurrency(vehicle.asset_value)}
+                        </dd>
                       </div>
                       {vehicle.vin && (
                         <div>
@@ -205,7 +241,9 @@ export default function VehicleDetailPage() {
                       {vehicle.purchase_price && (
                         <div>
                           <dt className="text-sm font-medium text-gray-500">Purchase Price</dt>
-                          <dd className="mt-1 text-sm text-gray-900">{formatCurrency(vehicle.purchase_price)}</dd>
+                          <dd className="mt-1 text-sm text-gray-900">
+                            {formatCurrency(vehicle.purchase_price)}
+                          </dd>
                         </div>
                       )}
                     </dl>
@@ -234,11 +272,11 @@ export default function VehicleDetailPage() {
                             <div className="flex justify-between items-start">
                               <div>
                                 <h4 className="font-medium text-gray-900">
-                                  {record.mt_maintenance_types?.name || record.custom_type || 'Maintenance'}
+                                  {record.mt_maintenance_types?.name ||
+                                    record.custom_type ||
+                                    'Maintenance'}
                                 </h4>
-                                <p className="text-sm text-gray-600 mt-1">
-                                  {record.description}
-                                </p>
+                                <p className="text-sm text-gray-600 mt-1">{record.description}</p>
                                 <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                                   <span>Date: {new Date(record.date).toLocaleDateString()}</span>
                                   <span>Mileage: {formatNumber(record.mileage)} mi</span>

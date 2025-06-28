@@ -41,7 +41,7 @@ interface MaintenanceWizardProps {
 
 const steps = [
   'vehicle',
-  'employee', 
+  'employee',
   'mileage',
   'type',
   'cost',
@@ -51,7 +51,7 @@ const steps = [
   'review',
 ] as const;
 
-type Step = typeof steps[number];
+type Step = (typeof steps)[number];
 
 export function MaintenanceWizard({
   vehicles,
@@ -74,18 +74,18 @@ export function MaintenanceWizard({
   const isLastStep = currentStepIndex === steps.length - 1;
 
   const updateFormData = (updates: Partial<MaintenanceFormData>) => {
-    setFormData(prev => ({ ...prev, ...updates }));
+    setFormData((prev) => ({ ...prev, ...updates }));
   };
 
   const goToNext = () => {
     if (!isLastStep) {
-      setCurrentStepIndex(prev => prev + 1);
+      setCurrentStepIndex((prev) => prev + 1);
     }
   };
 
   const goToPrevious = () => {
     if (!isFirstStep) {
-      setCurrentStepIndex(prev => prev - 1);
+      setCurrentStepIndex((prev) => prev - 1);
     }
   };
 
@@ -109,56 +109,26 @@ export function MaintenanceWizard({
 
     switch (currentStep) {
       case 'vehicle':
-        return (
-          <VehicleStep
-            {...stepProps}
-            vehicles={vehicles}
-          />
-        );
+        return <VehicleStep {...stepProps} vehicles={vehicles} />;
       case 'employee':
-        return (
-          <EmployeeStep
-            {...stepProps}
-          />
-        );
+        return <EmployeeStep {...stepProps} />;
       case 'mileage':
         return (
           <MileageStep
             {...stepProps}
-            selectedVehicle={vehicles.find(v => v.id === formData.vehicleId)}
+            selectedVehicle={vehicles.find((v) => v.id === formData.vehicleId)}
           />
         );
       case 'type':
-        return (
-          <MaintenanceTypeStep
-            {...stepProps}
-            maintenanceTypes={maintenanceTypes}
-          />
-        );
+        return <MaintenanceTypeStep {...stepProps} maintenanceTypes={maintenanceTypes} />;
       case 'cost':
-        return (
-          <CostStep
-            {...stepProps}
-          />
-        );
+        return <CostStep {...stepProps} />;
       case 'description':
-        return (
-          <DescriptionStep
-            {...stepProps}
-          />
-        );
+        return <DescriptionStep {...stepProps} />;
       case 'images':
-        return (
-          <ImagesStep
-            {...stepProps}
-          />
-        );
+        return <ImagesStep {...stepProps} />;
       case 'recommendations':
-        return (
-          <RecommendationsStep
-            {...stepProps}
-          />
-        );
+        return <RecommendationsStep {...stepProps} />;
       case 'review':
         return (
           <ReviewStep

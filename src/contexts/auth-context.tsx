@@ -28,25 +28,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         const { data: profileData, error: profileError } = await supabase
           .from('mt_users')
           .select('*')
           .eq('id', session.user.id)
           .single();
-        
+
         console.log('Auth Debug:', {
           userId: session.user.id,
           profileData,
-          profileError
+          profileError,
         });
-        
+
         setProfile(profileData);
       } else {
         setProfile(null);
       }
-      
+
       setLoading(false);
     });
 
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     });
-    
+
     if (error) throw error;
   };
 
@@ -87,28 +87,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     });
-    
+
     if (authError) throw authError;
-    
+
     if (authData.user) {
       const { data: companyData, error: companyError } = await supabase
         .from('mt_companies')
         .insert({ name: companyName })
         .select()
         .single();
-      
+
       if (companyError) throw companyError;
-      
-      const { error: userError } = await supabase
-        .from('mt_users')
-        .insert({
-          id: authData.user.id,
-          email,
-          name,
-          role: 'owner',
-          company_id: companyData.id,
-        });
-      
+
+      const { error: userError } = await supabase.from('mt_users').insert({
+        id: authData.user.id,
+        email,
+        name,
+        role: 'owner',
+        company_id: companyData.id,
+      });
+
       if (userError) throw userError;
     }
   };
@@ -120,20 +118,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshProfile = async () => {
     if (!user) return;
-    
+
     const { data: profileData, error: profileError } = await supabase
       .from('mt_users')
       .select('*')
       .eq('id', user.id)
       .single();
-    
+
     if (!profileError) {
       setProfile(profileData);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, refreshProfile }}>
+    <AuthContext.Provider
+      value={{ user, profile, loading, signIn, signUp, signOut, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

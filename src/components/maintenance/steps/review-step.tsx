@@ -17,20 +17,20 @@ interface ReviewStepProps {
   onComplete: () => void;
 }
 
-export function ReviewStep({ 
-  formData, 
-  onPrevious, 
-  vehicles, 
-  maintenanceTypes, 
-  onComplete 
+export function ReviewStep({
+  formData,
+  onPrevious,
+  vehicles,
+  maintenanceTypes,
+  onComplete,
 }: ReviewStepProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const { profile } = useAuth();
   const supabase = createClient();
 
-  const selectedVehicle = vehicles.find(v => v.id === formData.vehicleId);
-  const selectedType = maintenanceTypes.find(t => t.id === formData.maintenanceTypeId);
+  const selectedVehicle = vehicles.find((v) => v.id === formData.vehicleId);
+  const selectedType = maintenanceTypes.find((t) => t.id === formData.maintenanceTypeId);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -58,9 +58,7 @@ export function ReviewStep({
         throw new Error(`Failed to upload image: ${uploadError.message}`);
       }
 
-      const { data } = supabase.storage
-        .from('maintenance-images')
-        .getPublicUrl(filePath);
+      const { data } = supabase.storage.from('maintenance-images').getPublicUrl(filePath);
 
       return {
         maintenance_id: maintenanceId,
@@ -70,12 +68,10 @@ export function ReviewStep({
     });
 
     const imageRecords = await Promise.all(uploadPromises);
-    
+
     if (imageRecords.length > 0) {
-      const { error } = await supabase
-        .from('mt_maintenance_images')
-        .insert(imageRecords);
-      
+      const { error } = await supabase.from('mt_maintenance_images').insert(imageRecords);
+
       if (error) throw error;
     }
   };
@@ -115,7 +111,7 @@ export function ReviewStep({
 
       // Create recommendations if any
       if (formData.recommendations.length > 0) {
-        const recommendationRecords = formData.recommendations.map(rec => ({
+        const recommendationRecords = formData.recommendations.map((rec) => ({
           maintenance_id: maintenanceRecord.id,
           description: rec.description,
           recommended_date: rec.recommendedDate || null,
@@ -147,12 +143,8 @@ export function ReviewStep({
   return (
     <div className="bg-white rounded-lg shadow-sm p-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Review and Submit
-        </h2>
-        <p className="text-gray-600">
-          Double-check your maintenance record before submitting.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Review and Submit</h2>
+        <p className="text-gray-600">Double-check your maintenance record before submitting.</p>
       </div>
 
       <div className="max-w-2xl mx-auto">
@@ -167,7 +159,8 @@ export function ReviewStep({
           <div className="border rounded-lg p-4">
             <h3 className="font-medium text-gray-900 mb-2">Vehicle</h3>
             <p className="text-gray-700">
-              {selectedVehicle && `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`}
+              {selectedVehicle &&
+                `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`}
               {selectedVehicle?.license_plate && ` (${selectedVehicle.license_plate})`}
             </p>
           </div>
@@ -175,9 +168,7 @@ export function ReviewStep({
           {/* Maintenance Type */}
           <div className="border rounded-lg p-4">
             <h3 className="font-medium text-gray-900 mb-2">Maintenance Type</h3>
-            <p className="text-gray-700">
-              {selectedType?.name || formData.customType}
-            </p>
+            <p className="text-gray-700">{selectedType?.name || formData.customType}</p>
           </div>
 
           {/* Mileage */}
@@ -228,7 +219,9 @@ export function ReviewStep({
           {/* Recommendations */}
           {formData.recommendations.length > 0 && (
             <div className="border rounded-lg p-4">
-              <h3 className="font-medium text-gray-900 mb-2">Future Recommendations ({formData.recommendations.length})</h3>
+              <h3 className="font-medium text-gray-900 mb-2">
+                Future Recommendations ({formData.recommendations.length})
+              </h3>
               <div className="space-y-2">
                 {formData.recommendations.map((rec, index) => (
                   <div key={index} className="text-gray-700">
@@ -257,8 +250,18 @@ export function ReviewStep({
             disabled={submitting}
             className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
           >
-            <svg className="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5 5-5M18 12H6" />
+            <svg
+              className="mr-2 -ml-1 w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 17l-5-5 5-5M18 12H6"
+              />
             </svg>
             Back
           </button>
@@ -270,17 +273,42 @@ export function ReviewStep({
           >
             {submitting ? (
               <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Submitting...
               </>
             ) : (
               <>
                 Submit Maintenance Record
-                <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="ml-2 -mr-1 w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               </>
             )}

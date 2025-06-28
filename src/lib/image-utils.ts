@@ -1,7 +1,11 @@
 import { createClient } from '@/lib/supabase/client';
 
 // Image compression utility
-export const compressImage = (file: File, maxWidth: number = 1200, quality: number = 0.8): Promise<Blob> => {
+export const compressImage = (
+  file: File,
+  maxWidth: number = 1200,
+  quality: number = 0.8
+): Promise<Blob> => {
   return new Promise((resolve) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -10,7 +14,7 @@ export const compressImage = (file: File, maxWidth: number = 1200, quality: numb
     img.onload = () => {
       // Calculate new dimensions
       let { width, height } = img;
-      
+
       if (width > maxWidth) {
         height = (height * maxWidth) / width;
         width = maxWidth;
@@ -21,7 +25,7 @@ export const compressImage = (file: File, maxWidth: number = 1200, quality: numb
 
       // Draw and compress
       ctx?.drawImage(img, 0, 0, width, height);
-      
+
       canvas.toBlob(
         (blob) => {
           resolve(blob as Blob);
@@ -53,12 +57,10 @@ export const uploadImage = async (
     }
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(path, fileToUpload, {
-        cacheControl: '3600',
-        upsert: true,
-      });
+    const { data, error } = await supabase.storage.from(bucket).upload(path, fileToUpload, {
+      cacheControl: '3600',
+      upsert: true,
+    });
 
     if (error) throw error;
 
@@ -77,9 +79,7 @@ export const deleteImage = async (
   const supabase = createClient();
 
   try {
-    const { error } = await supabase.storage
-      .from(bucket)
-      .remove([path]);
+    const { error } = await supabase.storage.from(bucket).remove([path]);
 
     if (error) throw error;
   } catch (error) {
@@ -96,9 +96,7 @@ export const getImageUrl = (
   if (!path) return null;
 
   const supabase = createClient();
-  const { data } = supabase.storage
-    .from(bucket)
-    .getPublicUrl(path);
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
 
   return data.publicUrl;
 };
@@ -108,7 +106,7 @@ export const generateImagePath = (userId: string, fileName: string): string => {
   const timestamp = Date.now();
   const randomString = Math.random().toString(36).substring(2);
   const extension = fileName.split('.').pop();
-  
+
   return `${userId}/${timestamp}-${randomString}.${extension}`;
 };
 

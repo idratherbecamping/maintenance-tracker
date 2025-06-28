@@ -60,12 +60,8 @@ export function CostStep({ formData, updateFormData, onNext, onPrevious }: CostS
   return (
     <div className="bg-white rounded-lg shadow-sm p-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          How much did it cost?
-        </h2>
-        <p className="text-gray-600">
-          Enter the total cost for this maintenance (optional).
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">How much did it cost?</h2>
+        <p className="text-gray-600">Enter the total cost for this maintenance (optional).</p>
       </div>
 
       <div className="max-w-md mx-auto">
@@ -86,9 +82,7 @@ export function CostStep({ formData, updateFormData, onNext, onPrevious }: CostS
               autoFocus
             />
             {cost && (
-              <div className="mt-2 text-center text-sm text-gray-500">
-                {formatCurrency(cost)}
-              </div>
+              <div className="mt-2 text-center text-sm text-gray-500">{formatCurrency(cost)}</div>
             )}
           </div>
         ) : (
@@ -118,7 +112,12 @@ export function CostStep({ formData, updateFormData, onNext, onPrevious }: CostS
           className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
           <svg className="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5 5-5M18 12H6" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 17l-5-5 5-5M18 12H6"
+            />
           </svg>
           Back
         </button>
@@ -129,7 +128,12 @@ export function CostStep({ formData, updateFormData, onNext, onPrevious }: CostS
         >
           Continue
           <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5-5 5M6 12h12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 7l5 5-5 5M6 12h12"
+            />
           </svg>
         </button>
       </div>

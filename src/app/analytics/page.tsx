@@ -6,20 +6,20 @@ import { Navbar } from '@/components/layout/navbar';
 import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/types/database';
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  BarChart, 
-  Bar, 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from 'recharts';
 
 type MaintenanceRecord = Database['public']['Tables']['mt_maintenance_records']['Row'] & {
@@ -52,8 +52,16 @@ interface AnalyticsData {
 }
 
 const COLORS = [
-  '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', 
-  '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'
+  '#3B82F6',
+  '#10B981',
+  '#F59E0B',
+  '#EF4444',
+  '#8B5CF6',
+  '#06B6D4',
+  '#84CC16',
+  '#F97316',
+  '#EC4899',
+  '#6366F1',
 ];
 
 export default function AnalyticsPage() {
@@ -80,12 +88,14 @@ export default function AnalyticsPage() {
       // Fetch maintenance records with relationships
       const { data: recordsData, error: recordsError } = await supabase
         .from('mt_maintenance_records')
-        .select(`
+        .select(
+          `
           *,
           mt_vehicles!inner (id, year, make, model, license_plate, company_id),
           mt_users (id, name),
           mt_maintenance_types (id, name)
-        `)
+        `
+        )
         .eq('mt_vehicles.company_id', profile.company_id)
         .order('date', { ascending: false });
 
@@ -120,14 +130,14 @@ export default function AnalyticsPage() {
 
   // Filter records based on selected filters
   const filteredRecords = useMemo(() => {
-    return records.filter(record => {
+    return records.filter((record) => {
       // Vehicle filter
       if (selectedVehicle && record.vehicle_id !== selectedVehicle) return false;
-      
+
       // Date range filter
       if (dateRange.from && new Date(record.date) < new Date(dateRange.from)) return false;
       if (dateRange.to && new Date(record.date) > new Date(dateRange.to)) return false;
-      
+
       return true;
     });
   }, [records, selectedVehicle, dateRange]);
@@ -136,54 +146,60 @@ export default function AnalyticsPage() {
   const analyticsData: AnalyticsData = useMemo(() => {
     // Cost by maintenance type
     const typeMap = new Map<string, number>();
-    filteredRecords.forEach(record => {
+    filteredRecords.forEach((record) => {
       const type = record.mt_maintenance_types?.name || record.custom_type || 'Other';
       typeMap.set(type, (typeMap.get(type) || 0) + (record.cost || 0));
     });
 
     const totalCost = Array.from(typeMap.values()).reduce((sum, cost) => sum + cost, 0);
-    const costByType = Array.from(typeMap.entries()).map(([name, value]) => ({
-      name,
-      value,
-      percentage: totalCost > 0 ? (value / totalCost) * 100 : 0
-    })).sort((a, b) => b.value - a.value);
+    const costByType = Array.from(typeMap.entries())
+      .map(([name, value]) => ({
+        name,
+        value,
+        percentage: totalCost > 0 ? (value / totalCost) * 100 : 0,
+      }))
+      .sort((a, b) => b.value - a.value);
 
     // Cost by vehicle
     const vehicleMap = new Map<string, { cost: number; records: number }>();
-    filteredRecords.forEach(record => {
+    filteredRecords.forEach((record) => {
       if (record.mt_vehicles) {
         const vehicleName = `${record.mt_vehicles.year} ${record.mt_vehicles.make} ${record.mt_vehicles.model}`;
         const current = vehicleMap.get(vehicleName) || { cost: 0, records: 0 };
         vehicleMap.set(vehicleName, {
           cost: current.cost + (record.cost || 0),
-          records: current.records + 1
+          records: current.records + 1,
         });
       }
     });
 
-    const costByVehicle = Array.from(vehicleMap.entries()).map(([name, data]) => ({
-      name,
-      value: data.cost,
-      records: data.records
-    })).sort((a, b) => b.value - a.value);
+    const costByVehicle = Array.from(vehicleMap.entries())
+      .map(([name, data]) => ({
+        name,
+        value: data.cost,
+        records: data.records,
+      }))
+      .sort((a, b) => b.value - a.value);
 
     // Cost by employee
     const employeeMap = new Map<string, { cost: number; records: number }>();
-    filteredRecords.forEach(record => {
+    filteredRecords.forEach((record) => {
       if (record.mt_users) {
         const current = employeeMap.get(record.mt_users.name) || { cost: 0, records: 0 };
         employeeMap.set(record.mt_users.name, {
           cost: current.cost + (record.cost || 0),
-          records: current.records + 1
+          records: current.records + 1,
         });
       }
     });
 
-    const costByEmployee = Array.from(employeeMap.entries()).map(([name, data]) => ({
-      name,
-      value: data.cost,
-      records: data.records
-    })).sort((a, b) => b.value - a.value);
+    const costByEmployee = Array.from(employeeMap.entries())
+      .map(([name, data]) => ({
+        name,
+        value: data.cost,
+        records: data.records,
+      }))
+      .sort((a, b) => b.value - a.value);
 
     // Monthly trends (last 12 months)
     const monthMap = new Map<string, { cost: number; records: number }>();
@@ -194,28 +210,31 @@ export default function AnalyticsPage() {
       monthMap.set(monthKey, { cost: 0, records: 0 });
     }
 
-    filteredRecords.forEach(record => {
+    filteredRecords.forEach((record) => {
       const monthKey = record.date.slice(0, 7);
       if (monthMap.has(monthKey)) {
         const current = monthMap.get(monthKey)!;
         monthMap.set(monthKey, {
           cost: current.cost + (record.cost || 0),
-          records: current.records + 1
+          records: current.records + 1,
         });
       }
     });
 
     const monthlyTrends = Array.from(monthMap.entries()).map(([month, data]) => ({
-      month: new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+      month: new Date(month + '-01').toLocaleDateString('en-US', {
+        month: 'short',
+        year: 'numeric',
+      }),
       cost: data.cost,
-      records: data.records
+      records: data.records,
     }));
 
     // Top expensive vehicles
-    const topExpensiveVehicles = costByVehicle.slice(0, 5).map(vehicle => ({
+    const topExpensiveVehicles = costByVehicle.slice(0, 5).map((vehicle) => ({
       name: vehicle.name,
       cost: vehicle.value,
-      costPerRecord: vehicle.records > 0 ? vehicle.value / vehicle.records : 0
+      costPerRecord: vehicle.records > 0 ? vehicle.value / vehicle.records : 0,
     }));
 
     return {
@@ -223,7 +242,7 @@ export default function AnalyticsPage() {
       costByVehicle,
       costByEmployee,
       monthlyTrends,
-      topExpensiveVehicles
+      topExpensiveVehicles,
     };
   }, [filteredRecords]);
 
@@ -355,7 +374,7 @@ export default function AnalyticsPage() {
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     >
                       <option value="">All vehicles</option>
-                      {vehicles.map(vehicle => (
+                      {vehicles.map((vehicle) => (
                         <option key={vehicle.id} value={vehicle.id}>
                           {vehicle.year} {vehicle.make} {vehicle.model}
                         </option>
@@ -370,19 +389,17 @@ export default function AnalyticsPage() {
                     <input
                       type="date"
                       value={dateRange.from}
-                      onChange={(e) => setDateRange(prev => ({ ...prev, from: e.target.value }))}
+                      onChange={(e) => setDateRange((prev) => ({ ...prev, from: e.target.value }))}
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      To Date
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
                     <input
                       type="date"
                       value={dateRange.to}
-                      onChange={(e) => setDateRange(prev => ({ ...prev, to: e.target.value }))}
+                      onChange={(e) => setDateRange((prev) => ({ ...prev, to: e.target.value }))}
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     />
                   </div>
@@ -443,7 +460,9 @@ export default function AnalyticsPage() {
                       <div className="ml-4">
                         <p className="text-sm font-medium text-gray-500">Total Spent</p>
                         <p className="text-2xl font-bold text-gray-900">
-                          {formatCurrency(filteredRecords.reduce((sum, r) => sum + (r.cost || 0), 0))}
+                          {formatCurrency(
+                            filteredRecords.reduce((sum, r) => sum + (r.cost || 0), 0)
+                          )}
                         </p>
                       </div>
                     </div>
@@ -474,8 +493,9 @@ export default function AnalyticsPage() {
                         <p className="text-sm font-medium text-gray-500">Avg per Record</p>
                         <p className="text-2xl font-bold text-gray-900">
                           {formatCurrency(
-                            filteredRecords.length > 0 
-                              ? filteredRecords.reduce((sum, r) => sum + (r.cost || 0), 0) / filteredRecords.length 
+                            filteredRecords.length > 0
+                              ? filteredRecords.reduce((sum, r) => sum + (r.cost || 0), 0) /
+                                  filteredRecords.length
                               : 0
                           )}
                         </p>
@@ -504,7 +524,9 @@ export default function AnalyticsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Cost by Maintenance Type Pie Chart */}
                   <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Cost by Maintenance Type</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Cost by Maintenance Type
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
                         <Pie
@@ -528,7 +550,9 @@ export default function AnalyticsPage() {
 
                   {/* Monthly Trends */}
                   <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Spending Trends</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Monthly Spending Trends
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <LineChart data={analyticsData.monthlyTrends}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -543,7 +567,9 @@ export default function AnalyticsPage() {
 
                 {/* Top Expensive Vehicles */}
                 <div className="bg-white rounded-lg shadow p-6">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Most Expensive Vehicles to Maintain</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Most Expensive Vehicles to Maintain
+                  </h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={analyticsData.topExpensiveVehicles}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -587,7 +613,9 @@ export default function AnalyticsPage() {
 
                   {/* Vehicle Maintenance Frequency */}
                   <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Maintenance Frequency by Vehicle</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Maintenance Frequency by Vehicle
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={analyticsData.costByVehicle.slice(0, 6)}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -604,7 +632,10 @@ export default function AnalyticsPage() {
                 {selectedVehicle && (
                   <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="text-lg font-medium text-gray-900 mb-4">
-                      Individual Vehicle Analysis: {vehicles.find(v => v.id === selectedVehicle)?.year} {vehicles.find(v => v.id === selectedVehicle)?.make} {vehicles.find(v => v.id === selectedVehicle)?.model}
+                      Individual Vehicle Analysis:{' '}
+                      {vehicles.find((v) => v.id === selectedVehicle)?.year}{' '}
+                      {vehicles.find((v) => v.id === selectedVehicle)?.make}{' '}
+                      {vehicles.find((v) => v.id === selectedVehicle)?.model}
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <PieChart>
@@ -636,7 +667,9 @@ export default function AnalyticsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Employee Activity */}
                   <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Maintenance Records by Employee</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Maintenance Records by Employee
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={analyticsData.costByEmployee}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -650,7 +683,9 @@ export default function AnalyticsPage() {
 
                   {/* Employee Cost Management */}
                   <div className="bg-white rounded-lg shadow p-6">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Cost Managed by Employee</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Cost Managed by Employee
+                    </h3>
                     <ResponsiveContainer width="100%" height={300}>
                       <BarChart data={analyticsData.costByEmployee}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -666,7 +701,9 @@ export default function AnalyticsPage() {
                 {/* Employee Performance Table */}
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-medium text-gray-900">Employee Performance Summary</h3>
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Employee Performance Summary
+                    </h3>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
@@ -699,7 +736,9 @@ export default function AnalyticsPage() {
                               {formatCurrency(employee.value)}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {formatCurrency(employee.records > 0 ? employee.value / employee.records : 0)}
+                              {formatCurrency(
+                                employee.records > 0 ? employee.value / employee.records : 0
+                              )}
                             </td>
                           </tr>
                         ))}

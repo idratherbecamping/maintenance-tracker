@@ -50,7 +50,12 @@ export default function EditVehiclePage() {
     }
   };
 
-  const handleSubmit = async (vehicleData: Omit<VehicleUpdate, 'company_id'> & { imageFile?: File | null; removeImage?: boolean }) => {
+  const handleSubmit = async (
+    vehicleData: Omit<VehicleUpdate, 'company_id'> & {
+      imageFile?: File | null;
+      removeImage?: boolean;
+    }
+  ) => {
     if (!profile?.id) {
       setError('User not authenticated');
       return;
@@ -72,7 +77,7 @@ export default function EditVehiclePage() {
         if (vehicle?.image_url) {
           await deleteImage('vehicle-images', vehicle.image_url);
         }
-        
+
         // Upload new image
         const imagePath = generateImagePath(profile.id, vehicleData.imageFile.name);
         await uploadImage(vehicleData.imageFile, 'vehicle-images', imagePath);
@@ -145,9 +150,9 @@ export default function EditVehiclePage() {
     vin: vehicle.vin || '',
     license_plate: vehicle.license_plate || '',
     current_mileage: vehicle.current_mileage,
-    asset_value: vehicle.asset_value || '' as const,
+    asset_value: vehicle.asset_value || ('' as const),
     purchase_date: vehicle.purchase_date || '',
-    purchase_price: vehicle.purchase_price || '' as const,
+    purchase_price: vehicle.purchase_price || ('' as const),
   };
 
   return (

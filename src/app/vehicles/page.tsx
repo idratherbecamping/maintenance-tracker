@@ -51,7 +51,7 @@ export default function VehiclesPage() {
         .eq('id', vehicleId);
 
       if (error) throw error;
-      setVehicles(vehicles.filter(v => v.id !== vehicleId));
+      setVehicles(vehicles.filter((v) => v.id !== vehicleId));
     } catch (error) {
       console.error('Error deleting vehicle:', error);
     }
@@ -137,11 +137,7 @@ export default function VehiclesPage() {
             ) : (
               <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {vehicles.map((vehicle) => (
-                  <VehicleCard
-                    key={vehicle.id}
-                    vehicle={vehicle}
-                    onDelete={handleDeleteVehicle}
-                  />
+                  <VehicleCard key={vehicle.id} vehicle={vehicle} onDelete={handleDeleteVehicle} />
                 ))}
               </div>
             )}

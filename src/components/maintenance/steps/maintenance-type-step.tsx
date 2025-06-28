@@ -14,20 +14,20 @@ interface MaintenanceTypeStepProps {
   maintenanceTypes: MaintenanceType[];
 }
 
-export function MaintenanceTypeStep({ 
-  formData, 
-  updateFormData, 
-  onNext, 
-  onPrevious, 
-  maintenanceTypes 
+export function MaintenanceTypeStep({
+  formData,
+  updateFormData,
+  onNext,
+  onPrevious,
+  maintenanceTypes,
 }: MaintenanceTypeStepProps) {
   const [showCustom, setShowCustom] = useState(!!formData.customType);
   const [customType, setCustomType] = useState(formData.customType || '');
 
   const handleTypeSelect = (typeId: string) => {
-    updateFormData({ 
+    updateFormData({
       maintenanceTypeId: typeId,
-      customType: undefined 
+      customType: undefined,
     });
     setShowCustom(false);
     setTimeout(onNext, 300);
@@ -35,9 +35,9 @@ export function MaintenanceTypeStep({
 
   const handleCustomTypeChange = (value: string) => {
     setCustomType(value);
-    updateFormData({ 
+    updateFormData({
       customType: value,
-      maintenanceTypeId: undefined 
+      maintenanceTypeId: undefined,
     });
   };
 
@@ -63,7 +63,7 @@ export function MaintenanceTypeStep({
     'Battery Replacement': '🔋',
     'Spark Plug Replacement': '⚡',
     'Wheel Alignment': '🎯',
-    'Inspection': '🔍',
+    Inspection: '🔍',
   };
 
   const getTypeEmoji = (typeName: string) => {
@@ -73,18 +73,14 @@ export function MaintenanceTypeStep({
   return (
     <div className="bg-white rounded-lg shadow-sm p-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          What type of maintenance?
-        </h2>
-        <p className="text-gray-600">
-          Select a common maintenance type or enter a custom one.
-        </p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">What type of maintenance?</h2>
+        <p className="text-gray-600">Select a common maintenance type or enter a custom one.</p>
       </div>
 
       {!showCustom ? (
         <div className="space-y-3">
           {maintenanceTypes
-            .filter(type => !type.is_custom)
+            .filter((type) => !type.is_custom)
             .map((type) => (
               <button
                 key={type.id}
@@ -153,7 +149,12 @@ export function MaintenanceTypeStep({
           className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
         >
           <svg className="mr-2 -ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5 5-5M18 12H6" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M11 17l-5-5 5-5M18 12H6"
+            />
           </svg>
           Back
         </button>
@@ -164,8 +165,18 @@ export function MaintenanceTypeStep({
             className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
           >
             Continue
-            <svg className="ml-2 -mr-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5-5 5M6 12h12" />
+            <svg
+              className="ml-2 -mr-1 w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5-5 5M6 12h12"
+              />
             </svg>
           </button>
         )}

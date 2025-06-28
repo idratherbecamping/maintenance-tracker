@@ -20,8 +20,8 @@ export function DemoBanner() {
               🚀 Demo Mode: You're viewing sample data from "Demo Fleet Management"
             </span>
             <span className="block sm:ml-2 sm:inline-block">
-              <span className="text-blue-200">•</span> 5 vehicles 
-              <span className="text-blue-200 mx-2">•</span> 10 maintenance records 
+              <span className="text-blue-200">•</span> 5 vehicles
+              <span className="text-blue-200 mx-2">•</span> 10 maintenance records
               <span className="text-blue-200 mx-2">•</span> $1,092 total costs
             </span>
           </p>
@@ -33,8 +33,18 @@ export function DemoBanner() {
             className="flex p-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-white"
           >
             <span className="sr-only">Dismiss</span>
-            <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="h-4 w-4 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>

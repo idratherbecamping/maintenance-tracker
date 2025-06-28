@@ -42,19 +42,39 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
             }}
           />
           <div className="hidden h-48 bg-gray-100 flex items-center justify-center">
-            <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <svg
+              className="h-12 w-12 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
             </svg>
           </div>
         </div>
       ) : (
         <div className="h-48 bg-gray-100 flex items-center justify-center">
-          <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <svg
+            className="h-12 w-12 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1}
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
           </svg>
         </div>
       )}
-      
+
       <div className="px-4 py-5 sm:p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
@@ -84,7 +104,12 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
                 onClick={() => onDelete(vehicle.id)}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
               </button>
             </div>
@@ -94,7 +119,9 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
         <div className="mt-4 grid grid-cols-2 gap-4">
           <div>
             <dt className="text-sm font-medium text-gray-500">Current Mileage</dt>
-            <dd className="mt-1 text-sm text-gray-900">{formatNumber(vehicle.current_mileage)} mi</dd>
+            <dd className="mt-1 text-sm text-gray-900">
+              {formatNumber(vehicle.current_mileage)} mi
+            </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-gray-500">Asset Value</dt>
@@ -111,7 +138,9 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
           {vehicle.purchase_price && (
             <div>
               <dt className="text-sm font-medium text-gray-500">Purchase Price</dt>
-              <dd className="mt-1 text-sm text-gray-900">{formatCurrency(vehicle.purchase_price)}</dd>
+              <dd className="mt-1 text-sm text-gray-900">
+                {formatCurrency(vehicle.purchase_price)}
+              </dd>
             </div>
           )}
         </div>

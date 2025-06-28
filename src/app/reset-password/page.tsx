@@ -8,13 +8,15 @@ import { z } from 'zod';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
-const resetPasswordSchema = z.object({
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const resetPasswordSchema = z
+  .object({
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
@@ -63,7 +65,7 @@ export default function ResetPasswordPage() {
       if (error) throw error;
 
       setSuccess(true);
-      
+
       // Redirect to login after a delay
       setTimeout(() => {
         router.push('/login?message=Password updated successfully');
@@ -83,18 +85,21 @@ export default function ResetPasswordPage() {
           <div className="text-center">
             <div className="mx-auto h-12 w-12 text-green-600">
               <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Password Updated!</h2>
             <p className="mt-2 text-sm text-gray-600">
-              Your password has been successfully updated. You will be redirected to the login page shortly.
+              Your password has been successfully updated. You will be redirected to the login page
+              shortly.
             </p>
             <div className="mt-4">
-              <Link
-                href="/login"
-                className="text-blue-600 hover:text-blue-500 font-medium"
-              >
+              <Link href="/login" className="text-blue-600 hover:text-blue-500 font-medium">
                 Go to login now
               </Link>
             </div>
@@ -114,9 +119,7 @@ export default function ResetPasswordPage() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Reset your password
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your new password below
-          </p>
+          <p className="mt-2 text-center text-sm text-gray-600">Enter your new password below</p>
         </div>
 
         {error && (
@@ -124,7 +127,11 @@ export default function ResetPasswordPage() {
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -179,10 +186,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="text-center">
-            <Link
-              href="/login"
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
+            <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
               Back to login
             </Link>
           </div>
