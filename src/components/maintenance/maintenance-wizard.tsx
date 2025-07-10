@@ -9,7 +9,6 @@ import { MaintenanceTypeStep } from './steps/maintenance-type-step';
 import { CostStep } from './steps/cost-step';
 import { DescriptionStep } from './steps/description-step';
 import { ImagesStep } from './steps/images-step';
-import { RecommendationsStep } from './steps/recommendations-step';
 import { ReviewStep } from './steps/review-step';
 import { Database } from '@/types/database';
 
@@ -47,7 +46,6 @@ const steps = [
   'cost',
   'description',
   'images',
-  'recommendations',
   'review',
 ] as const;
 
@@ -127,8 +125,6 @@ export function MaintenanceWizard({
         return <DescriptionStep {...stepProps} />;
       case 'images':
         return <ImagesStep {...stepProps} />;
-      case 'recommendations':
-        return <RecommendationsStep {...stepProps} />;
       case 'review':
         return (
           <ReviewStep
