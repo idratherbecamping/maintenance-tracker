@@ -8,8 +8,6 @@ import { StepIndicator } from '@/components/onboarding/StepIndicator';
 import { NavigationControls } from '@/components/onboarding/NavigationControls';
 import { BusinessInfoForm, BusinessInfoData } from '@/components/onboarding/BusinessInfoForm';
 import { AdminProfileForm, AdminProfileData } from '@/components/onboarding/AdminProfileForm';
-import { AddWorkersForm, WorkerData } from '@/components/onboarding/AddWorkersForm';
-import { AddFleetForm, VehicleData } from '@/components/onboarding/AddFleetForm';
 import { ReviewComplete } from '@/components/onboarding/ReviewComplete';
 import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
@@ -17,9 +15,7 @@ import { createClient } from '@/lib/supabase/client';
 const ONBOARDING_STEPS = [
   { id: 1, name: 'Business Info', description: 'Company details' },
   { id: 2, name: 'Admin Profile', description: 'Your information' },
-  { id: 3, name: 'Team Members', description: 'Invite workers' },
-  { id: 4, name: 'Fleet', description: 'Add vehicles' },
-  { id: 5, name: 'Complete', description: 'Review & finish' },
+  { id: 3, name: 'Complete', description: 'Review & finish' },
 ];
 
 export default function OnboardingPage() {
@@ -29,8 +25,6 @@ export default function OnboardingPage() {
   const [onboardingData, setOnboardingData] = useState({
     businessInfo: {} as BusinessInfoData,
     adminProfile: {} as AdminProfileData,
-    workers: [] as WorkerData[],
-    vehicles: [] as VehicleData[],
   });
   
   const { profile, user } = useAuth();
@@ -114,55 +108,6 @@ export default function OnboardingPage() {
     }
   };
 
-  const handleWorkersSubmit = async (workers: WorkerData[]) => {
-    setLoading(true);
-    setError('');
-
-    try {
-      // In a real implementation, you would send invitations here
-      // For now, we'll just store the data
-      setOnboardingData({ ...onboardingData, workers });
-      setCurrentStep(4);
-    } catch (err) {
-      setError('Failed to process team members');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFleetSubmit = async (vehicles: VehicleData[]) => {
-    setLoading(true);
-    setError('');
-
-    try {
-      // Add vehicles to the database
-      if (vehicles.length > 0) {
-        const vehicleInserts = vehicles.map(v => ({
-          company_id: profile!.company_id,
-          make: v.make,
-          model: v.model,
-          year: v.year,
-          license_plate: v.license_plate || null,
-          current_mileage: v.current_mileage,
-        }));
-
-        const { error: insertError } = await supabase
-          .from('mt_vehicles')
-          .insert(vehicleInserts);
-
-        if (insertError) throw insertError;
-      }
-
-      setOnboardingData({ ...onboardingData, vehicles });
-      setCurrentStep(5);
-    } catch (err) {
-      setError('Failed to add vehicles');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleComplete = async () => {
     console.log('Onboarding: Completing onboarding process');
@@ -173,7 +118,7 @@ export default function OnboardingPage() {
   };
 
   const handleSkip = async () => {
-    if (currentStep < 5) {
+    if (currentStep < 3) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -232,42 +177,10 @@ export default function OnboardingPage() {
 
       case 3:
         return (
-          <>
-            <AddWorkersForm
-              onSubmit={handleWorkersSubmit}
-              loading={loading}
-            />
-            <NavigationControls
-              onPrevious={handlePrevious}
-              onNext={() => handleWorkersSubmit(onboardingData.workers)}
-              onSkip={handleSkip}
-              loading={loading}
-            />
-          </>
-        );
-
-      case 4:
-        return (
-          <>
-            <AddFleetForm
-              onSubmit={handleFleetSubmit}
-              loading={loading}
-            />
-            <NavigationControls
-              onPrevious={handlePrevious}
-              onNext={() => handleFleetSubmit(onboardingData.vehicles)}
-              onSkip={handleSkip}
-              loading={loading}
-            />
-          </>
-        );
-
-      case 5:
-        return (
           <ReviewComplete
             companyName={onboardingData.businessInfo.name}
-            workerCount={onboardingData.workers.length}
-            vehicleCount={onboardingData.vehicles.length}
+            workerCount={0}
+            vehicleCount={0}
             onComplete={handleComplete}
             loading={loading}
           />
