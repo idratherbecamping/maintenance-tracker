@@ -225,7 +225,7 @@ export default function ProfilePage() {
                       <div className="mt-1">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                            profile.role === 'owner'
+                            profile.role === 'admin'
                               ? 'bg-purple-100 text-purple-800'
                               : 'bg-blue-100 text-blue-800'
                           }`}

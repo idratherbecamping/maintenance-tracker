@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/auth-context';
@@ -11,9 +11,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mounted, setMounted] = useState(false);
   const { signIn } = useAuth();
   const router = useRouter();
   const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fillDemoCredentials = () => {
     setEmail('demo@example.com');
@@ -34,6 +39,12 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  if (!mounted) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-gray-600">Loading...</div>
+    </div>;
+  }
 
   return (
     <>
@@ -74,7 +85,6 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    suppressHydrationWarning={true}
                   />
                 </div>
               </div>
@@ -93,9 +103,14 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    suppressHydrationWarning={true}
                   />
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
+                  Forgot your password?
+                </Link>
               </div>
 
               <div>

@@ -30,7 +30,7 @@ export default function RemindersPage() {
                 </div>
               </div>
               <div className="mt-4 flex space-x-3 md:ml-4 md:mt-0">
-                {profile?.role === 'owner' && (
+                {profile?.role === 'admin' && (
                   <Link
                     href="/reminders/rules/new"
                     className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
@@ -55,7 +55,7 @@ export default function RemindersPage() {
                   >
                     Active Reminders
                   </button>
-                  {profile?.role === 'owner' && (
+                  {profile?.role === 'admin' && (
                     <button
                       onClick={() => setActiveTab('rules')}
                       className={`${
@@ -74,7 +74,7 @@ export default function RemindersPage() {
             {/* Tab Content */}
             <div className="mt-6">
               {activeTab === 'active' && <ActiveRemindersList />}
-              {activeTab === 'rules' && profile?.role === 'owner' && <ReminderRulesList />}
+              {activeTab === 'rules' && profile?.role === 'admin' && <ReminderRulesList />}
             </div>
           </div>
         </div>

@@ -25,6 +25,9 @@ export default function NewVehiclePage() {
       removeImage?: boolean;
     }
   ) => {
+    console.log('Vehicle submission - Profile:', profile);
+    console.log('Vehicle submission - Data:', vehicleData);
+    
     if (!profile?.company_id || !profile?.id) {
       setError('No company ID found');
       return;
@@ -46,12 +49,18 @@ export default function NewVehiclePage() {
       // Create vehicle data without the extra fields
       const { imageFile, removeImage, ...vehicleInsertData } = vehicleData;
 
-      const { error: insertError } = await supabase.from('mt_vehicles').insert({
+      const insertData = {
         ...vehicleInsertData,
         company_id: profile.company_id,
         image_url: imageUrl,
-      });
+      };
+      
+      console.log('Vehicle submission - Insert data:', insertData);
+      
+      const { error: insertError } = await supabase.from('mt_vehicles').insert(insertData);
 
+      console.log('Vehicle submission - Insert error:', insertError);
+      
       if (insertError) throw insertError;
 
       router.push('/vehicles');

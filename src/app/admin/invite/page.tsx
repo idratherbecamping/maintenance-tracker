@@ -1,25 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/auth-context';
+import { useState } from 'react';
 
-export default function SignupPage() {
+export default function AdminInvitePage() {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
     companyName: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [mounted, setMounted] = useState(false);
-  const { signUp } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [message, setMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -31,69 +21,57 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setMessage('');
 
     try {
-      console.log('Creating account...');
-      
-      // Use Supabase's built-in signup with metadata
-      const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: 'temp-password-123!', // Temporary password, user will reset via email
-        options: {
-          data: {
-            name: formData.name,
-            company_name: formData.companyName,
-            is_admin: true,
-          }
-        }
+      const response = await fetch('/api/admin/invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          name: formData.name,
+          companyName: formData.companyName,
+        }),
       });
 
-      if (error) throw error;
+      const result = await response.json();
 
-      console.log('Account created successfully');
-      
-      // Show success message
-      setError(''); 
-      alert('Account created! Please check your email to verify your account and set your password.');
-      
-      // Redirect to login
-      router.push('/login');
-      
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send invitation');
+      }
+
+      setMessage(`Invitation sent successfully to ${formData.email}!`);
+      setFormData({ email: '', name: '', companyName: '' });
     } catch (err) {
-      console.error('Signup error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setMessage(`Error: ${err instanceof Error ? err.message : 'An error occurred'}`);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!mounted) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-gray-600">Loading...</div>
-    </div>;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          Create your account
+          Invite New Customer
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
-          <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-            sign in to existing account
-          </Link>
+          Send an invitation to set up a new maintenance tracker account
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-                {error}
+            {message && (
+              <div className={`p-3 rounded ${
+                message.includes('Error') 
+                  ? 'bg-red-50 border border-red-200 text-red-600' 
+                  : 'bg-green-50 border border-green-200 text-green-600'
+              }`}>
+                {message}
               </div>
             )}
 
@@ -116,7 +94,7 @@ export default function SignupPage() {
 
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
+                Contact Name
               </label>
               <div className="mt-1">
                 <input
@@ -133,7 +111,7 @@ export default function SignupPage() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+                Email Address
               </label>
               <div className="mt-1">
                 <input
@@ -148,7 +126,6 @@ export default function SignupPage() {
                 />
               </div>
             </div>
-
 
             <div>
               <button

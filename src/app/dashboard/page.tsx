@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Navbar } from '@/components/layout/navbar';
 import { RecentMaintenanceList } from '@/components/dashboard/recent-maintenance-list';
@@ -15,25 +16,65 @@ interface DashboardStats {
   totalSpent: number;
 }
 
+interface CompanyInfo {
+  name: string;
+  onboarding_completed: boolean;
+}
+
 export default function DashboardPage() {
   const { profile } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
     totalVehicles: 0,
     thisMonthRecords: 0,
     upcomingReminders: 0,
     totalSpent: 0,
   });
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
   useEffect(() => {
     if (profile?.company_id) {
+      checkOnboardingStatus();
       fetchDashboardStats();
     }
   }, [profile]);
 
+  const checkOnboardingStatus = async () => {
+    if (!profile?.company_id) return;
+
+    console.log('Dashboard: Checking onboarding status for company:', profile.company_id);
+
+    try {
+      const { data, error } = await supabase
+        .from('mt_companies')
+        .select('name, onboarding_completed')
+        .eq('id', profile.company_id)
+        .single();
+
+      console.log('Dashboard: Company info result:', { data, error });
+
+      if (data) {
+        setCompanyInfo(data);
+        
+        if (!data.onboarding_completed) {
+          console.log('Dashboard: Redirecting to onboarding - not completed');
+          router.push('/onboarding');
+        } else {
+          console.log('Dashboard: Onboarding completed, staying on dashboard');
+        }
+      }
+    } catch (err) {
+      console.log('Dashboard: Error checking company info:', err);
+      router.push('/onboarding');
+    }
+  };
+
   const fetchDashboardStats = async () => {
     if (!profile?.company_id) return;
+
+    console.log('Dashboard: Fetching stats for company:', profile.company_id);
 
     try {
       const startOfMonth = new Date();
@@ -87,6 +128,15 @@ export default function DashboardPage() {
           .then((result) => result)
           .catch(() => ({ count: 0, data: null, error: null })),
       ]);
+
+      // Debug the results
+      console.log('Dashboard: Query results:', {
+        vehicles: vehiclesResult,
+        thisMonth: thisMonthResult,
+        allRecords: allRecordsResult,
+        manualReminders: manualRemindersResult,
+        activeReminders: activeRemindersResult
+      });
 
       // Process results with error handling
       const totalVehicles =
@@ -147,6 +197,8 @@ export default function DashboardPage() {
                 </h2>
                 <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
                   <div className="mt-2 flex items-center text-sm text-gray-500">
+                    <span className="font-medium">{companyInfo?.name}</span>
+                    <span className="mx-2">•</span>
                     <span className="capitalize">{profile?.role}</span>
                   </div>
                 </div>

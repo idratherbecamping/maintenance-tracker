@@ -28,7 +28,7 @@ export type Database = {
           id: string;
           email: string;
           name: string;
-          role: 'owner' | 'employee';
+          role: 'admin' | 'employee';
           company_id: string;
           avatar_url: string | null;
           created_at: string;
@@ -38,7 +38,7 @@ export type Database = {
           id: string;
           email: string;
           name: string;
-          role?: 'owner' | 'employee';
+          role?: 'admin' | 'employee';
           company_id: string;
           avatar_url?: string | null;
           created_at?: string;
@@ -48,7 +48,7 @@ export type Database = {
           id?: string;
           email?: string;
           name?: string;
-          role?: 'owner' | 'employee';
+          role?: 'admin' | 'employee';
           company_id?: string;
           avatar_url?: string | null;
           created_at?: string;
@@ -391,7 +391,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      user_role: 'owner' | 'employee';
+      user_role: 'admin' | 'employee';
     };
   };
 };
