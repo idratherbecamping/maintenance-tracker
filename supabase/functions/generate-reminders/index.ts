@@ -255,7 +255,7 @@ async function processReminderRule(supabase: any, rule: any, vehicle: any): Prom
   }
 
   // Create the reminder
-  const { error: insertError } = await supabase
+  const { data: newReminder, error: insertError } = await supabase
     .from('mt_active_reminders')
     .insert({
       reminder_rule_id: rule.id,
@@ -267,7 +267,9 @@ async function processReminderRule(supabase: any, rule: any, vehicle: any): Prom
       current_mileage: vehicle.current_mileage,
       target_mileage: reminderData.target_mileage,
       status: 'active'
-    });
+    })
+    .select('id')
+    .single();
 
   if (insertError) {
     console.error('Error inserting reminder:', insertError);
@@ -275,6 +277,33 @@ async function processReminderRule(supabase: any, rule: any, vehicle: any): Prom
   }
 
   console.log(`Created reminder for rule ${rule.rule_name} on vehicle ${vehicle.make} ${vehicle.model}`);
+  
+  // Send email notification
+  if (newReminder?.id) {
+    try {
+      const baseUrl = Deno.env.get('NEXT_PUBLIC_SITE_URL') || 
+                    Deno.env.get('SITE_URL') || 
+                    'https://maintracker.avalon-iq.com';
+      const response = await fetch(`${baseUrl}/api/reminders/send-notification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`
+        },
+        body: JSON.stringify({ reminderId: newReminder.id })
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send email notification:', await response.text());
+      } else {
+        console.log('Email notification sent successfully');
+      }
+    } catch (error) {
+      console.error('Error sending email notification:', error);
+      // Don't throw error - reminder creation should succeed even if email fails
+    }
+  }
+  
   return 1;
 }
 
