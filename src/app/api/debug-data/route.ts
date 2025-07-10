@@ -34,8 +34,8 @@ export async function GET(request: NextRequest) {
     // Get all maintenance records
     const { data: maintenanceRecords, error: maintenanceError } = await supabaseAdmin
       .from('mt_maintenance_records')
-      .select('*')
-      .eq('company_id', companyId);
+      .select('*, mt_vehicles!inner(company_id)')
+      .eq('mt_vehicles.company_id', companyId);
 
     // Get all users
     const { data: users } = await supabaseAdmin
@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
     // Get active reminders
     const { data: activeReminders } = await supabaseAdmin
       .from('mt_active_reminders')
-      .select('*')
-      .eq('company_id', companyId);
+      .select('*, mt_vehicles!inner(company_id)')
+      .eq('mt_vehicles.company_id', companyId);
 
     const summary = {
       company: company || null,

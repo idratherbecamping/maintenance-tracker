@@ -80,7 +80,6 @@ export default function OnboardingPage() {
       if (updateError) throw updateError;
 
       setOnboardingData({ ...onboardingData, businessInfo: data });
-      await updateOnboardingStatus(2);
       setCurrentStep(2);
     } catch (err) {
       setError('Failed to update business information');
@@ -106,7 +105,6 @@ export default function OnboardingPage() {
       if (updateError) throw updateError;
 
       setOnboardingData({ ...onboardingData, adminProfile: data });
-      await updateOnboardingStatus(3);
       setCurrentStep(3);
     } catch (err) {
       setError('Failed to update profile');
@@ -124,7 +122,6 @@ export default function OnboardingPage() {
       // In a real implementation, you would send invitations here
       // For now, we'll just store the data
       setOnboardingData({ ...onboardingData, workers });
-      await updateOnboardingStatus(4);
       setCurrentStep(4);
     } catch (err) {
       setError('Failed to process team members');
@@ -158,7 +155,6 @@ export default function OnboardingPage() {
       }
 
       setOnboardingData({ ...onboardingData, vehicles });
-      await updateOnboardingStatus(5);
       setCurrentStep(5);
     } catch (err) {
       setError('Failed to add vehicles');
