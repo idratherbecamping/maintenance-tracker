@@ -60,11 +60,12 @@ export default function RemindersPage() {
                 </div>
               </div>
               <div className="mt-4 flex space-x-3 md:ml-4 md:mt-0">
-                {profile?.role === 'admin' && (
+                {(profile?.role === 'admin' || profile?.role === 'employee') && (
                   <>
                     <button
                       onClick={handleGenerateReminders}
                       disabled={isGenerating}
+                      title="This will show all active reminders including dismissed ones"
                       className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isGenerating ? (
@@ -73,10 +74,10 @@ export default function RemindersPage() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          Generating...
+                          Fetching...
                         </>
                       ) : (
-                        'Generate Reminders'
+                        'Refresh Reminders'
                       )}
                     </button>
                     <Link
@@ -104,7 +105,7 @@ export default function RemindersPage() {
                   >
                     Active Reminders
                   </button>
-                  {profile?.role === 'admin' && (
+                  {(profile?.role === 'admin' || profile?.role === 'employee') && (
                     <button
                       onClick={() => setActiveTab('rules')}
                       className={`${
@@ -123,7 +124,7 @@ export default function RemindersPage() {
             {/* Tab Content */}
             <div className="mt-6">
               {activeTab === 'active' && <ActiveRemindersList />}
-              {activeTab === 'rules' && profile?.role === 'admin' && <ReminderRulesList />}
+              {activeTab === 'rules' && (profile?.role === 'admin' || profile?.role === 'employee') && <ReminderRulesList />}
             </div>
           </div>
         </div>

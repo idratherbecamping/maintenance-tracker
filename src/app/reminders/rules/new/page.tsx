@@ -171,7 +171,7 @@ export default function NewReminderRulePage() {
   };
 
   return (
-    <ProtectedRoute requireOwner>
+    <ProtectedRoute>
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="py-10">
