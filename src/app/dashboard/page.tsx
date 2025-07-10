@@ -116,7 +116,8 @@ export default function DashboardPage() {
         // Manual reminders
         supabase
           .from('mt_maintenance_recommendations')
-          .select('id', { count: 'exact', head: true })
+          .select('id, mt_maintenance_records!inner(company_id)', { count: 'exact', head: true })
+          .eq('mt_maintenance_records.company_id', profile.company_id)
           .eq('is_completed', false)
           .gte('recommended_date', today),
 
@@ -124,6 +125,7 @@ export default function DashboardPage() {
         supabase
           .from('mt_active_reminders')
           .select('id', { count: 'exact', head: true })
+          .eq('company_id', profile.company_id)
           .in('status', ['active', 'snoozed'])
           .then((result) => result)
           .catch(() => ({ count: 0, data: null, error: null })),

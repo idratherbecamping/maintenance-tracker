@@ -82,24 +82,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('Auth: Fetching profile for user:', session.user.id);
         
         try {
-          // Add timeout to prevent hanging
-          const profilePromise = supabase
-            .from('mt_users')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
+          // Use service role API to bypass RLS issues
+          const response = await fetch(`/api/debug-profile?userId=${session.user.id}`);
+          const result = await response.json();
           
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
-          );
+          let profileData = null;
+          let profileError = null;
           
-          const { data: profileData, error: profileError } = await Promise.race([
-            profilePromise,
-            timeoutPromise
-          ]).catch(err => {
-            console.error('Auth: Profile fetch failed:', err);
-            return { data: null, error: err };
-          });
+          if (result.success && result.profile) {
+            profileData = result.profile;
+            console.log('Auth: Profile fetched successfully via API');
+          } else {
+            profileError = new Error(result.error || 'Failed to fetch profile');
+          }
           
           console.log('Auth: Profile fetch result:', { profileData, profileError });
 
@@ -113,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
 
           // If no profile exists, handle first-time login
-          if (!profileData && !profileError?.message?.includes('timeout')) {
+          if (!profileData) {
             console.log('Auth: First-time login detected');
             
             if (session.user.user_metadata?.is_employee) {
@@ -124,77 +119,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               await createCompanyAndProfile(session.user);
             }
             
-            // Retry fetching the profile with timeout
-            const retryPromise = supabase
-              .from('mt_users')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
+            // Retry fetching the profile via API
+            const retryResponse = await fetch(`/api/debug-profile?userId=${session.user.id}`);
+            const retryResult = await retryResponse.json();
             
-            const retryTimeoutPromise = new Promise((_, reject) => 
-              setTimeout(() => reject(new Error('Retry timeout')), 3000)
-            );
-            
-            const { data: newProfileData } = await Promise.race([
-              retryPromise,
-              retryTimeoutPromise
-            ]).catch(() => ({ data: null }));
-            
-            console.log('Auth: New profile created:', newProfileData);
-            setProfile(newProfileData);
-          } else if (profileError?.message?.includes('timeout')) {
-            console.warn('Auth: Profile fetch timed out, trying service role API');
-            
-            // Try fetching via service role API
-            try {
-              const response = await fetch(`/api/debug-profile?userId=${session.user.id}`);
-              const result = await response.json();
-              
-              if (result.success && result.profile) {
-                console.log('Auth: Profile fetched via service role:', result.profile);
-                setProfile(result.profile);
-              } else if (!result.userExists) {
-                console.log('Auth: User does not exist, creating profile');
-                // User doesn't exist, create it
-                if (session.user.user_metadata?.is_employee) {
-                  await createEmployeeProfile(session.user);
-                } else {
-                  await createCompanyAndProfile(session.user);
-                }
-                
-                // Fetch again via service role
-                const retryResponse = await fetch(`/api/debug-profile?userId=${session.user.id}`);
-                const retryResult = await retryResponse.json();
-                if (retryResult.success) {
-                  setProfile(retryResult.profile);
-                }
-              } else {
-                console.error('Auth: Failed to fetch profile via service role:', result);
-                // Last resort - create minimal profile
-                setProfile({
-                  id: session.user.id,
-                  email: session.user.email!,
-                  name: session.user.email!.split('@')[0],
-                  role: 'admin',
-                  company_id: null,
-                  created_at: new Date().toISOString(),
-                  updated_at: new Date().toISOString(),
-                  phone: null
-                } as any);
-              }
-            } catch (error) {
-              console.error('Auth: Service role API failed:', error);
-              // Create minimal profile as fallback
-              setProfile({
-                id: session.user.id,
-                email: session.user.email!,
-                name: session.user.email!.split('@')[0],
-                role: 'admin',
-                company_id: null,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                phone: null
-              } as any);
+            if (retryResult.success && retryResult.profile) {
+              console.log('Auth: New profile created:', retryResult.profile);
+              setProfile(retryResult.profile);
             }
           } else {
             setProfile(profileData);
