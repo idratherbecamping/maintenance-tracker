@@ -274,6 +274,7 @@ export type Database = {
           time_threshold_days: number | null;
           lead_time_days: number;
           priority: 'low' | 'medium' | 'high' | 'critical';
+          day_of_week: number | null;
           created_at: string;
           updated_at: string;
         };
@@ -297,6 +298,7 @@ export type Database = {
           time_threshold_days?: number | null;
           lead_time_days?: number;
           priority?: 'low' | 'medium' | 'high' | 'critical';
+          day_of_week?: number | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -320,6 +322,7 @@ export type Database = {
           time_threshold_days?: number | null;
           lead_time_days?: number;
           priority?: 'low' | 'medium' | 'high' | 'critical';
+          day_of_week?: number | null;
           created_at?: string;
           updated_at?: string;
         };

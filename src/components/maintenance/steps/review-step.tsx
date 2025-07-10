@@ -43,6 +43,90 @@ export function ReviewStep({
     return new Intl.NumberFormat('en-US').format(num);
   };
 
+  const completeMatchingReminders = async (maintenanceRecord: any) => {
+    try {
+      console.log('Checking for matching active reminders...');
+      
+      // Find active reminders that match this maintenance
+      const { data: activeReminders, error: fetchError } = await supabase
+        .from('mt_active_reminders')
+        .select(`
+          *,
+          mt_reminder_rules!inner(
+            maintenance_type_id,
+            custom_type,
+            trigger_type
+          )
+        `)
+        .eq('vehicle_id', formData.vehicleId)
+        .in('status', ['active', 'snoozed']);
+
+      if (fetchError) {
+        console.error('Error fetching active reminders:', fetchError);
+        return; // Don't fail the whole operation if reminder completion fails
+      }
+
+      if (!activeReminders || activeReminders.length === 0) {
+        console.log('No active reminders found for this vehicle');
+        return;
+      }
+
+      console.log(`Found ${activeReminders.length} active reminders to check`);
+
+      // Filter reminders that match the maintenance type
+      const matchingReminders = activeReminders.filter(reminder => {
+        const rule = reminder.mt_reminder_rules;
+        
+        // Check if maintenance type matches
+        if (formData.maintenanceTypeId && rule.maintenance_type_id) {
+          return rule.maintenance_type_id === formData.maintenanceTypeId;
+        }
+        
+        // Check if custom type matches (case-insensitive)
+        if (formData.customType && rule.custom_type) {
+          return rule.custom_type.toLowerCase().trim() === formData.customType.toLowerCase().trim();
+        }
+        
+        return false;
+      });
+
+      if (matchingReminders.length === 0) {
+        console.log('No reminders match this maintenance type');
+        return;
+      }
+
+      console.log(`Found ${matchingReminders.length} matching reminders to complete`);
+
+      // Mark matching reminders as completed
+      const reminderIds = matchingReminders.map(r => r.id);
+      const { error: updateError } = await supabase
+        .from('mt_active_reminders')
+        .update({
+          status: 'completed',
+          completed_at: new Date().toISOString(),
+          completed_maintenance_id: maintenanceRecord.id
+        })
+        .in('id', reminderIds);
+
+      if (updateError) {
+        console.error('Error completing reminders:', updateError);
+        return; // Don't fail the whole operation
+      }
+
+      console.log(`Successfully completed ${matchingReminders.length} reminders`);
+      
+      // Show user feedback if reminders were completed
+      if (matchingReminders.length > 0) {
+        // We could show a toast notification here, but for now just log it
+        console.log(`✅ Completed ${matchingReminders.length} reminder(s) for this maintenance type`);
+      }
+      
+    } catch (error) {
+      console.error('Unexpected error in completeMatchingReminders:', error);
+      // Don't throw - we don't want reminder completion failures to break maintenance creation
+    }
+  };
+
   const uploadImages = async (maintenanceId: string) => {
     const uploadPromises = formData.images.map(async (image, index) => {
       const fileExt = image.name.split('.').pop();
@@ -131,6 +215,9 @@ export function ReviewStep({
         .eq('id', formData.vehicleId);
 
       if (vehicleError) throw vehicleError;
+
+      // Complete matching active reminders
+      await completeMatchingReminders(maintenanceRecord);
 
       onComplete();
     } catch (err) {

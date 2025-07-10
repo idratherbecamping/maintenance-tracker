@@ -31,6 +31,7 @@ const reminderRuleSchema = z
     time_threshold_days: z.number().optional(),
     lead_time_days: z.number().min(0, 'Lead time must be 0 or greater').default(7),
     priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+    day_of_week: z.number().min(0).max(6).optional(),
   })
   .refine(
     (data) => {
@@ -153,6 +154,7 @@ export default function NewReminderRulePage() {
         time_threshold_days: data.time_threshold_days || null,
         lead_time_days: data.lead_time_days,
         priority: data.priority,
+        day_of_week: data.day_of_week || null,
         is_active: true,
       };
 
@@ -404,6 +406,31 @@ export default function NewReminderRulePage() {
                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                           <span className="text-gray-500 sm:text-sm">days</span>
                         </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <label
+                          htmlFor="day_of_week"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Preferred Day of Week (Optional)
+                        </label>
+                        <select
+                          {...register('day_of_week', { valueAsNumber: true })}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
+                          <option value="">Any day</option>
+                          <option value="0">Sunday</option>
+                          <option value="1">Monday</option>
+                          <option value="2">Tuesday</option>
+                          <option value="3">Wednesday</option>
+                          <option value="4">Thursday</option>
+                          <option value="5">Friday</option>
+                          <option value="6">Saturday</option>
+                        </select>
+                        <p className="mt-1 text-sm text-gray-500">
+                          If specified, reminders will prefer to be scheduled on this day of the week.
+                        </p>
                       </div>
                     </div>
                   )}
