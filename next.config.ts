@@ -18,7 +18,14 @@ const nextConfig: NextConfig = {
 
   // Image optimization
   images: {
-    domains: ['gszyhxvmddsutmooospg.supabase.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'gszyhxvmddsutmooospg.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
     formats: ['image/webp', 'image/avif'],
   },
 

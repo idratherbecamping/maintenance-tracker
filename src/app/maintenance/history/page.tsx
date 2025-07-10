@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Navbar } from '@/components/layout/navbar';
@@ -24,6 +25,11 @@ type MaintenanceRecord = Database['public']['Tables']['mt_maintenance_records'][
   mt_maintenance_types: {
     name: string;
   } | null;
+  mt_maintenance_images: Array<{
+    id: string;
+    url: string;
+    caption: string | null;
+  }>;
 };
 
 function MaintenanceHistoryContent() {
@@ -41,6 +47,9 @@ function MaintenanceHistoryContent() {
     Array<{ id: string; year: number; make: string; model: string; license_plate: string | null }>
   >([]);
   const [selectedVehicle, setSelectedVehicle] = useState('');
+  const [selectedImage, setSelectedImage] = useState<{ url: string; caption: string | null } | null>(null);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const { profile } = useAuth();
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -71,13 +80,24 @@ function MaintenanceHistoryContent() {
           *,
           mt_vehicles!inner (year, make, model, license_plate, company_id),
           mt_users (name),
-          mt_maintenance_types (name)
+          mt_maintenance_types (name),
+          mt_maintenance_images (id, url, caption)
         `
         )
         .eq('mt_vehicles.company_id', profile.company_id)
         .order('date', { ascending: false });
 
       if (error) throw error;
+      
+      // Debug: Log image data
+      if (data) {
+        data.forEach(record => {
+          if (record.mt_maintenance_images && record.mt_maintenance_images.length > 0) {
+            console.log('Record images:', record.mt_maintenance_images);
+          }
+        });
+      }
+      
       setRecords(data || []);
     } catch (error) {
       console.error('Error fetching maintenance history:', error);
@@ -531,6 +551,86 @@ function MaintenanceHistoryContent() {
                                   <p className="text-gray-700 mb-3">{record.description}</p>
                                 )}
 
+                                {/* Images */}
+                                {record.mt_maintenance_images && record.mt_maintenance_images.length > 0 && (
+                                  <div className="mb-4">
+                                    <h4 className="text-sm font-medium text-gray-900 mb-2">
+                                      Attachments ({record.mt_maintenance_images.length})
+                                    </h4>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                      {record.mt_maintenance_images.map((image, index) => (
+                                        <div key={image.id} className="relative group">
+                                          <div 
+                                            className="aspect-square rounded-lg overflow-hidden bg-gray-100 cursor-pointer relative"
+                                            onClick={() => setSelectedImage({ url: image.url, caption: image.caption })}
+                                          >
+                                            {/* Loading placeholder */}
+                                            <div className="absolute inset-0 flex items-center justify-center bg-gray-200 z-10">
+                                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                                            </div>
+                                            <img
+                                              src={image.url}
+                                              alt={image.caption || `Maintenance photo ${index + 1}`}
+                                              className="w-full h-full object-cover transition-transform group-hover:scale-105 relative z-20"
+                                              loading="lazy"
+                                              crossOrigin="anonymous"
+                                              onError={(e) => {
+                                                console.error('Image failed to load:', image.url);
+                                                // Hide the image and show an error state
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'none';
+                                                const parent = target.parentElement;
+                                                if (parent) {
+                                                  // Remove loading placeholder first
+                                                  const loadingPlaceholder = parent.querySelector('.absolute.inset-0.flex');
+                                                  if (loadingPlaceholder) {
+                                                    loadingPlaceholder.remove();
+                                                  }
+                                                  // Show error state
+                                                  parent.innerHTML = `
+                                                    <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                                                      <svg class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                      </svg>
+                                                    </div>
+                                                  `;
+                                                }
+                                              }}
+                                              onLoad={(e) => {
+                                                console.log('Image loaded successfully:', image.url);
+                                                // Hide loading placeholder and ensure image is visible
+                                                const target = e.target as HTMLImageElement;
+                                                target.style.display = 'block';
+                                                target.style.opacity = '1';
+                                                const loadingPlaceholder = target.parentElement?.querySelector('.absolute.inset-0.flex');
+                                                if (loadingPlaceholder) {
+                                                  loadingPlaceholder.remove();
+                                                }
+                                              }}
+                                            />
+                                            {/* Overlay on hover */}
+                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center pointer-events-none">
+                                              <svg 
+                                                className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                                                fill="none" 
+                                                viewBox="0 0 24 24" 
+                                                stroke="currentColor"
+                                              >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                              </svg>
+                                            </div>
+                                          </div>
+                                          {image.caption && (
+                                            <p className="text-xs text-gray-500 mt-1 truncate">
+                                              {image.caption}
+                                            </p>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
                                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                                   <span>Date: {new Date(record.date).toLocaleDateString()}</span>
                                   <span>Mileage: {formatNumber(record.mileage)} mi</span>
@@ -549,6 +649,41 @@ function MaintenanceHistoryContent() {
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div 
+            className="relative max-w-4xl max-h-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 z-10"
+            >
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="relative">
+              <img
+                src={selectedImage.url}
+                alt={selectedImage.caption || 'Maintenance photo'}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+                style={{ maxWidth: '90vw', maxHeight: '80vh' }}
+              />
+              {selectedImage.caption && (
+                <p className="text-white text-center mt-4 px-4">
+                  {selectedImage.caption}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </ProtectedRoute>
   );
 }

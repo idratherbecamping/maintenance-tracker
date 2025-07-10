@@ -223,12 +223,6 @@ export function ReminderRulesList() {
               >
                 {rule.is_active ? 'Deactivate' : 'Activate'}
               </button>
-              <Link
-                href={`/reminders/rules/${rule.id}/edit`}
-                className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Edit
-              </Link>
               <button
                 onClick={() => deleteRule(rule.id)}
                 className="inline-flex items-center px-3 py-1.5 border border-red-300 shadow-sm text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50"
