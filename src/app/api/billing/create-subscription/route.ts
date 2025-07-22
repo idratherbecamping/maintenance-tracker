@@ -125,13 +125,16 @@ export async function POST(request: NextRequest) {
       billing_cycle_anchor: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
     };
 
-    // Add discount information if applied
-    if (validCoupon) {
-      updateData.discount_code = validCoupon.id;
-      updateData.discount_percent_off = validCoupon.percent_off;
-      updateData.discount_amount_off = validCoupon.amount_off;
-      updateData.discount_expires_at = validCoupon.redeem_by ? new Date(validCoupon.redeem_by * 1000).toISOString() : null;
-    }
+    // TODO: Add discount information if applied (requires database migration)
+    // if (validCoupon) {
+    //   updateData.discount_code = validCoupon.id;
+    //   updateData.discount_percent_off = validCoupon.percent_off;
+    //   updateData.discount_amount_off = validCoupon.amount_off;
+    //   updateData.discount_expires_at = validCoupon.redeem_by ? new Date(validCoupon.redeem_by * 1000).toISOString() : null;
+    // }
+
+    console.log('Updating company with billing data:', updateData);
+    console.log('Company ID:', profile.company_id);
 
     const { error: updateError } = await supabase
       .from('mt_companies')
@@ -140,6 +143,7 @@ export async function POST(request: NextRequest) {
 
     if (updateError) {
       console.error('Error updating company billing info:', updateError);
+      console.error('Update data that failed:', updateData);
       // Note: In production, you might want to cancel the subscription here
       return NextResponse.json({ error: 'Failed to save billing information' }, { status: 500 });
     }
