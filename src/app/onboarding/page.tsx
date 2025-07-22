@@ -8,6 +8,7 @@ import { StepIndicator } from '@/components/onboarding/StepIndicator';
 import { NavigationControls } from '@/components/onboarding/NavigationControls';
 import { BusinessInfoForm, BusinessInfoData } from '@/components/onboarding/BusinessInfoForm';
 import { AdminProfileForm, AdminProfileData } from '@/components/onboarding/AdminProfileForm';
+import { BillingSetupForm, BillingSetupData } from '@/components/onboarding/BillingSetupForm';
 import { ReviewComplete } from '@/components/onboarding/ReviewComplete';
 import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
@@ -15,7 +16,8 @@ import { createClient } from '@/lib/supabase/client';
 const ONBOARDING_STEPS = [
   { id: 1, name: 'Business Info', description: 'Company details' },
   { id: 2, name: 'Admin Profile', description: 'Your information' },
-  { id: 3, name: 'Complete', description: 'Review & finish' },
+  { id: 3, name: 'Billing Setup', description: 'Payment & vehicles' },
+  { id: 4, name: 'Complete', description: 'Review & finish' },
 ];
 
 export default function OnboardingPage() {
@@ -25,6 +27,7 @@ export default function OnboardingPage() {
   const [onboardingData, setOnboardingData] = useState({
     businessInfo: {} as BusinessInfoData,
     adminProfile: {} as AdminProfileData,
+    billingSetup: {} as BillingSetupData & { paymentMethodId?: string },
   });
   
   const { profile, user } = useAuth();
@@ -108,6 +111,40 @@ export default function OnboardingPage() {
     }
   };
 
+  const handleBillingSetupSubmit = async (data: BillingSetupData & { paymentMethodId: string }) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/billing/create-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          vehicleCount: data.vehicleCount,
+          billingEmail: data.billingEmail,
+          paymentMethodId: data.paymentMethodId,
+          discountCode: data.discountCode,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to set up billing');
+      }
+
+      setOnboardingData({ ...onboardingData, billingSetup: data });
+      setCurrentStep(4);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to set up billing');
+      console.error('Billing setup error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleComplete = async () => {
     console.log('Onboarding: Completing onboarding process');
@@ -118,7 +155,7 @@ export default function OnboardingPage() {
   };
 
   const handleSkip = async () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -177,10 +214,33 @@ export default function OnboardingPage() {
 
       case 3:
         return (
+          <>
+            <BillingSetupForm
+              initialData={{
+                vehicleCount: onboardingData.billingSetup.vehicleCount || 5,
+                billingEmail: onboardingData.billingSetup.billingEmail || profile?.email || '',
+              }}
+              onSubmit={handleBillingSetupSubmit}
+              loading={loading}
+            />
+            <NavigationControls
+              onPrevious={handlePrevious}
+              onNext={() => {
+                // The form handles its own submission
+              }}
+              nextDisabled={true} // Form handles submission
+              loading={loading}
+              hideNext={true} // Form has its own submit button
+            />
+          </>
+        );
+
+      case 4:
+        return (
           <ReviewComplete
             companyName={onboardingData.businessInfo.name}
             workerCount={0}
-            vehicleCount={0}
+            vehicleCount={onboardingData.billingSetup.vehicleCount || 0}
             onComplete={handleComplete}
             loading={loading}
           />

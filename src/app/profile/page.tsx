@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Navbar } from '@/components/layout/navbar';
+import { BillingInfo } from '@/components/billing/billing-info';
 import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
 
@@ -20,6 +21,7 @@ type ProfileForm = z.infer<typeof profileSchema>;
 export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [activeTab, setActiveTab] = useState<'profile' | 'billing'>('profile');
   const { profile, user, refreshProfile } = useAuth();
   const router = useRouter();
   const supabase = createClient();
@@ -141,11 +143,53 @@ export default function ProfilePage() {
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
               <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
-                Profile Settings
+                Settings
               </h1>
               <p className="mt-1 text-sm text-gray-500">
-                Manage your account information and preferences.
+                Manage your account information, billing, and preferences.
               </p>
+            </div>
+
+            {/* Tabs */}
+            <div className="mb-8">
+              <div className="sm:hidden">
+                <select
+                  value={activeTab}
+                  onChange={(e) => setActiveTab(e.target.value as 'profile' | 'billing')}
+                  className="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                >
+                  <option value="profile">Profile</option>
+                  {profile?.role === 'admin' && <option value="billing">Billing</option>}
+                </select>
+              </div>
+              <div className="hidden sm:block">
+                <div className="border-b border-gray-200">
+                  <nav className="-mb-px flex space-x-8">
+                    <button
+                      onClick={() => setActiveTab('profile')}
+                      className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                        activeTab === 'profile'
+                          ? 'border-blue-500 text-blue-600'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      Profile
+                    </button>
+                    {profile?.role === 'admin' && (
+                      <button
+                        onClick={() => setActiveTab('billing')}
+                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                          activeTab === 'billing'
+                            ? 'border-blue-500 text-blue-600'
+                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        }`}
+                      >
+                        Billing
+                      </button>
+                    )}
+                  </nav>
+                </div>
+              </div>
             </div>
 
             {message && (
@@ -166,114 +210,121 @@ export default function ProfilePage() {
               </div>
             )}
 
-            <div className="space-y-6">
-              {/* Profile Information */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h2>
+            {/* Tab Content */}
+            {activeTab === 'profile' && (
+              <div className="space-y-6">
+                {/* Profile Information */}
+                <div className="bg-white shadow rounded-lg">
+                  <div className="px-4 py-5 sm:p-6">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h2>
 
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        {...register('name')}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                      />
-                      {errors.name && (
-                        <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        {...register('email')}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                      />
-                      {errors.email && (
-                        <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-                      )}
-                    </div>
-
-                    <div className="flex justify-end">
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {loading ? 'Saving...' : 'Save Changes'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-
-              {/* Company Information */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">Company Information</h2>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Role</label>
-                      <div className="mt-1">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
-                            profile.role === 'admin'
-                              ? 'bg-purple-100 text-purple-800'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}
-                        >
-                          {profile.role}
-                        </span>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                      <div>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          {...register('name')}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {errors.name && (
+                          <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                        )}
                       </div>
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Company ID</label>
-                      <div className="mt-1">
-                        <code className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                          {profile.company_id}
-                        </code>
+                      <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          {...register('email')}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        />
+                        {errors.email && (
+                          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                        )}
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* Security */}
-              <div className="bg-white shadow rounded-lg">
-                <div className="px-4 py-5 sm:p-6">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">Security</h2>
-
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Password</label>
-                      <div className="mt-1 flex items-center space-x-4">
-                        <span className="text-sm text-gray-500">••••••••</span>
+                      <div className="flex justify-end">
                         <button
-                          type="button"
-                          onClick={handleChangePassword}
+                          type="submit"
                           disabled={loading}
-                          className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          Change Password
+                          {loading ? 'Saving...' : 'Save Changes'}
                         </button>
                       </div>
-                      <p className="mt-1 text-xs text-gray-500">
-                        We'll send you a password reset link to your email.
-                      </p>
+                    </form>
+                  </div>
+                </div>
+
+                {/* Company Information */}
+                <div className="bg-white shadow rounded-lg">
+                  <div className="px-4 py-5 sm:p-6">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Company Information</h2>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Role</label>
+                        <div className="mt-1">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                              profile.role === 'admin'
+                                ? 'bg-purple-100 text-purple-800'
+                                : 'bg-blue-100 text-blue-800'
+                            }`}
+                          >
+                            {profile.role}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Company ID</label>
+                        <div className="mt-1">
+                          <code className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                            {profile.company_id}
+                          </code>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Security */}
+                <div className="bg-white shadow rounded-lg">
+                  <div className="px-4 py-5 sm:p-6">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Security</h2>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Password</label>
+                        <div className="mt-1 flex items-center space-x-4">
+                          <span className="text-sm text-gray-500">••••••••</span>
+                          <button
+                            type="button"
+                            onClick={handleChangePassword}
+                            disabled={loading}
+                            className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Change Password
+                          </button>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">
+                          We'll send you a password reset link to your email.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {activeTab === 'billing' && profile?.role === 'admin' && (
+              <BillingInfo />
+            )}
           </div>
         </div>
       </div>
