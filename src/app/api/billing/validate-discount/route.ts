@@ -14,8 +14,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { discountCode } = body;
 
-    console.log('Validating discount code:', discountCode);
-    console.log('Using Stripe key:', process.env.STRIPE_SECRET_KEY?.substring(0, 20) + '...');
 
     if (!discountCode || typeof discountCode !== 'string') {
       return NextResponse.json({ error: 'Discount code is required' }, { status: 400 });
@@ -23,9 +21,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Retrieve coupon from Stripe
-      console.log('Attempting to retrieve coupon from Stripe...');
       const coupon = await BillingService.stripe.coupons.retrieve(discountCode);
-      console.log('Successfully retrieved coupon:', { id: coupon.id, valid: coupon.valid });
 
       // Check if coupon is valid
       if (!coupon.valid) {
@@ -69,13 +65,6 @@ export async function POST(request: NextRequest) {
       });
 
     } catch (stripeError: any) {
-      console.error('Stripe error details:', {
-        code: stripeError.code,
-        type: stripeError.type,
-        message: stripeError.message,
-        statusCode: stripeError.statusCode,
-        requestId: stripeError.requestId
-      });
 
       // Handle specific Stripe errors
       if (stripeError.code === 'resource_missing') {
@@ -89,7 +78,6 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error validating discount code:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }

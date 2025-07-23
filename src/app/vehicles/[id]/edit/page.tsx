@@ -104,7 +104,7 @@ export default function EditVehiclePage() {
         try {
           await autoSyncVehicleCount({ silent: true });
         } catch (syncError) {
-          console.warn('Billing sync failed after vehicle status change:', syncError);
+          // Silently handle billing sync errors
         }
       }
 

@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
   try {
     event = BillingService.verifyWebhookSignature(body, signature);
   } catch (err) {
-    console.error('Webhook signature verification failed:', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
@@ -51,12 +50,12 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
+        // Silently ignore unhandled event types
+        break;
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error('Error processing webhook:', error);
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -69,8 +68,6 @@ async function handleInvoiceCreated(invoice: Stripe.Invoice, supabase: any) {
 
   const companyId = invoice.customer.metadata?.company_id;
   if (!companyId) return;
-
-  console.log(`Invoice created for company ${companyId}: ${invoice.id}`);
   
   // Optionally log invoice creation or send notifications
 }
@@ -89,7 +86,6 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice, supabase: 
   }
 
   if (!companyId) {
-    console.warn('No company_id found for invoice:', invoice.id);
     return;
   }
 
@@ -112,9 +108,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice, supabase: 
   });
 
   if (error) {
-    console.error('Error saving billing history:', error);
-  } else {
-    console.log(`Payment succeeded for company ${companyId}: ${invoice.id}`);
+    // Silently handle error
   }
 }
 
@@ -151,9 +145,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice, supabase: any
   });
 
   if (error) {
-    console.error('Error saving failed payment to billing history:', error);
-  } else {
-    console.log(`Payment failed for company ${companyId}: ${invoice.id}`);
+    // Silently handle error
   }
 
   // Note: As per requirements, we don't block access on payment failure
@@ -185,9 +177,7 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription, supa
     .eq('stripe_subscription_id', subscription.id);
 
   if (error) {
-    console.error('Error updating subscription status:', error);
-  } else {
-    console.log(`Subscription updated for company ${companyId}: ${subscription.status}`);
+    // Silently handle error
   }
 }
 
@@ -214,9 +204,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription, supa
     .eq('stripe_subscription_id', subscription.id);
 
   if (error) {
-    console.error('Error updating canceled subscription:', error);
-  } else {
-    console.log(`Subscription canceled for company ${companyId}`);
+    // Silently handle error
   }
 }
 
@@ -234,8 +222,6 @@ async function handleTrialWillEnd(subscription: Stripe.Subscription, supabase: a
 
   if (!companyId) return;
 
-  console.log(`Trial will end for company ${companyId} on ${new Date(subscription.trial_end! * 1000)}`);
-  
   // You might want to send a notification email here
   // The trial end date is already stored in the database from previous webhook events
 }

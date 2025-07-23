@@ -54,7 +54,6 @@ export async function POST(request: NextRequest) {
           validCoupon = coupon;
         }
       } catch (error) {
-        console.warn(`Invalid discount code "${discountCode}":`, error);
         // Continue without discount rather than failing
       }
     }
@@ -128,17 +127,12 @@ export async function POST(request: NextRequest) {
     //   updateData.discount_expires_at = validCoupon.redeem_by ? new Date(validCoupon.redeem_by * 1000).toISOString() : null;
     // }
 
-    console.log('Updating company with billing data:', updateData);
-    console.log('Company ID:', profile.company_id);
-
     const { error: updateError } = await supabase
       .from('mt_companies')
       .update(updateData)
       .eq('id', profile.company_id);
 
     if (updateError) {
-      console.error('Error updating company billing info:', updateError);
-      console.error('Update data that failed:', updateData);
       // Note: In production, you might want to cancel the subscription here
       return NextResponse.json({ error: 'Failed to save billing information' }, { status: 500 });
     }
@@ -154,7 +148,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error creating subscription:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }

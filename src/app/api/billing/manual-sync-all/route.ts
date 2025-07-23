@@ -27,7 +27,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      console.error('Error calling sync function:', error);
       return NextResponse.json(
         { error: 'Failed to trigger sync', details: error.message },
         { status: 500 }
@@ -41,7 +40,6 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error in manual sync:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }

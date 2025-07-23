@@ -39,18 +39,14 @@ export default function OnboardingPage() {
   const markOnboardingComplete = async () => {
     if (!profile?.company_id) return;
 
-    console.log('Onboarding: Marking onboarding as complete for company:', profile.company_id);
-
     try {
       const { data, error } = await supabase
         .from('mt_companies')
         .update({ onboarding_completed: true })
         .eq('id', profile.company_id)
         .select();
-
-      console.log('Onboarding: Completion update result:', { data, error });
     } catch (err) {
-      console.error('Error marking onboarding complete:', err);
+      // Silently handle error
     }
   };
 
@@ -80,7 +76,6 @@ export default function OnboardingPage() {
       setCurrentStep(2);
     } catch (err) {
       setError('Failed to update business information');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -105,7 +100,6 @@ export default function OnboardingPage() {
       setCurrentStep(3);
     } catch (err) {
       setError('Failed to update profile');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -139,7 +133,6 @@ export default function OnboardingPage() {
       setCurrentStep(4);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to set up billing');
-      console.error('Billing setup error:', err);
     } finally {
       setLoading(false);
     }
@@ -147,10 +140,8 @@ export default function OnboardingPage() {
 
 
   const handleComplete = async () => {
-    console.log('Onboarding: Completing onboarding process');
     setLoading(true);
     await markOnboardingComplete();
-    console.log('Onboarding: Redirecting to dashboard');
     router.push('/dashboard');
   };
 

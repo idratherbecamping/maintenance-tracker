@@ -26,9 +26,6 @@ export default function NewVehiclePage() {
       removeImage?: boolean;
     }
   ) => {
-    console.log('Vehicle submission - Profile:', profile);
-    console.log('Vehicle submission - Data:', vehicleData);
-    
     if (!profile?.company_id || !profile?.id) {
       setError('No company ID found');
       return;
@@ -56,11 +53,7 @@ export default function NewVehiclePage() {
         image_url: imageUrl,
       };
       
-      console.log('Vehicle submission - Insert data:', insertData);
-      
       const { error: insertError } = await supabase.from('mt_vehicles').insert(insertData);
-
-      console.log('Vehicle submission - Insert error:', insertError);
       
       if (insertError) throw insertError;
 
@@ -69,7 +62,7 @@ export default function NewVehiclePage() {
         await autoSyncVehicleCount({ silent: true });
       } catch (syncError) {
         // Don't block vehicle creation if billing sync fails
-        console.warn('Billing sync failed after vehicle creation:', syncError);
+        // Silently handle billing sync errors
       }
 
       router.push('/vehicles');

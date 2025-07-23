@@ -38,7 +38,7 @@ export function BillingInfo({ onUpdateVehicleCount }: BillingInfoProps) {
       if (error) throw error;
       setCompany(data);
     } catch (error) {
-      console.error('Error fetching billing info:', error);
+      // Silently handle error
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ export function BillingInfo({ onUpdateVehicleCount }: BillingInfoProps) {
       if (error) throw error;
       setVehicleCount(count || 0);
     } catch (error) {
-      console.error('Error fetching vehicle count:', error);
+      // Silently handle error
     }
   };
 
@@ -80,7 +80,6 @@ export function BillingInfo({ onUpdateVehicleCount }: BillingInfoProps) {
       await fetchBillingInfo();
       if (onUpdateVehicleCount) onUpdateVehicleCount();
     } catch (error) {
-      console.error('Error syncing vehicle count:', error);
       alert('Failed to sync vehicle count. Please try again.');
     } finally {
       setUpdating(false);
@@ -100,11 +99,9 @@ export function BillingInfo({ onUpdateVehicleCount }: BillingInfoProps) {
       if (response.ok && result.url) {
         window.location.href = result.url;
       } else {
-        console.error('Portal session failed:', result);
         alert('Failed to open payment portal. Please try again.');
       }
     } catch (error) {
-      console.error('Error creating portal session:', error);
       alert('Error opening payment portal. Please try again.');
     }
   };

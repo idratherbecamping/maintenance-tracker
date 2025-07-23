@@ -30,7 +30,7 @@ export function BillingHistory() {
       if (error) throw error;
       setBillingHistory(data || []);
     } catch (error) {
-      console.error('Error fetching billing history:', error);
+      // Silently handle error
     } finally {
       setLoading(false);
     }

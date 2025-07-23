@@ -51,20 +51,10 @@ export async function POST(request: NextRequest) {
     const additionalVehicles = Math.max(0, actualVehicleCount - baseVehicles);
     const totalMonthlyAmount = 50 + (additionalVehicles * 5);
     
-    console.log(`Vehicle count: ${actualVehicleCount}, Additional vehicles: ${additionalVehicles}, Total amount: $${totalMonthlyAmount}`);
-    console.log('STRIPE_CONFIG.BASE_PRICE_ID:', STRIPE_CONFIG.BASE_PRICE_ID);
-    console.log('STRIPE_CONFIG.VEHICLE_PRICE_ID:', STRIPE_CONFIG.VEHICLE_PRICE_ID);
-    
     // Get the current subscription to update vehicle pricing
     const subscription = await stripe.subscriptions.retrieve(company.stripe_subscription_id, {
       expand: ['items.data.price']
     });
-    
-    console.log('Current subscription items:', subscription.items.data.map(item => ({
-      id: item.id,
-      price_id: item.price.id,
-      quantity: item.quantity
-    })));
     
     // Find the tiered subscription item
     const tieredItem = subscription.items.data.find(item => 
@@ -79,17 +69,10 @@ export async function POST(request: NextRequest) {
       item.price.id === STRIPE_CONFIG.VEHICLE_PRICE_ID
     );
     
-    console.log('Tiered item found:', !!tieredItem, tieredItem?.id);
-    console.log('Legacy base item found:', !!baseItem, baseItem?.id);
-    console.log('Legacy vehicle item found:', !!vehicleItem, vehicleItem?.id);
-    console.log('Total vehicles:', actualVehicleCount);
-    
     // Handle tiered pricing (single item with total vehicle count)
     if (tieredItem) {
-      console.log('Updating tiered subscription item quantity to:', actualVehicleCount);
       // Ensure minimum of 5 vehicles for the tiered pricing structure
       const quantityToUpdate = Math.max(5, actualVehicleCount);
-      console.log('Quantity being set:', quantityToUpdate);
       
       await stripe.subscriptionItems.update(tieredItem.id, {
         quantity: quantityToUpdate,
@@ -97,16 +80,13 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Handle legacy two-item pricing structure
-      console.log('Using legacy pricing structure');
       if (additionalVehicles > 0) {
         if (vehicleItem) {
-          console.log('Updating existing vehicle item quantity to:', additionalVehicles);
           await stripe.subscriptionItems.update(vehicleItem.id, {
             quantity: additionalVehicles,
             proration_behavior: 'none',
           });
         } else {
-          console.log('Creating new vehicle subscription item with quantity:', additionalVehicles);
           await stripe.subscriptionItems.create({
             subscription: company.stripe_subscription_id,
             price: STRIPE_CONFIG.VEHICLE_PRICE_ID,
@@ -115,7 +95,6 @@ export async function POST(request: NextRequest) {
           });
         }
       } else if (vehicleItem) {
-        console.log('Removing vehicle item since no additional vehicles needed');
         await stripe.subscriptionItems.del(vehicleItem.id, {
           proration_behavior: 'none',
         });
@@ -139,20 +118,8 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error syncing vehicle count:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    console.error('Environment check:');
-    console.error('STRIPE_TIERED_PRICE_ID:', process.env.STRIPE_TIERED_PRICE_ID);
-    console.error('STRIPE_CONFIG.TIERED_PRICE_ID:', STRIPE_CONFIG.TIERED_PRICE_ID);
-    
     return NextResponse.json(
-      { 
-        error: error instanceof Error ? error.message : 'Internal server error',
-        debug: {
-          tieredPriceId: process.env.STRIPE_TIERED_PRICE_ID,
-          configTieredPriceId: STRIPE_CONFIG.TIERED_PRICE_ID
-        }
-      },
+      { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 }
     );
   }

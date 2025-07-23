@@ -114,7 +114,6 @@ function BillingSetupFormContent({ initialData, onSubmit, loading }: BillingSetu
         setDiscountedAmount(null);
       }
     } catch (error) {
-      console.error('Error validating discount:', error);
       setDiscountError('Failed to validate discount code');
       setDiscountInfo(null);
       setDiscountedAmount(null);
@@ -182,14 +181,10 @@ function BillingSetupFormContent({ initialData, onSubmit, loading }: BillingSetu
       return;
     }
 
-    try {
-      await onSubmit({
-        ...data,
-        paymentMethodId: paymentMethod.id,
-      });
-    } catch (err) {
-      console.error('Error submitting billing form:', err);
-    }
+    await onSubmit({
+      ...data,
+      paymentMethodId: paymentMethod.id,
+    });
   };
 
   return (

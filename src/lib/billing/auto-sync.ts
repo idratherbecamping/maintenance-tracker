@@ -18,17 +18,14 @@ export async function autoSyncVehicleCount(options?: {
       throw new Error(result.error || 'Failed to sync vehicle count');
     }
 
-    console.log('Auto-sync successful:', result);
     return result;
   } catch (error) {
-    console.error('Auto-sync failed:', error);
-    
     if (!options?.silent) {
-      // Optionally show a non-blocking notification
-      // You could integrate with a toast library here
-      console.warn('Billing sync failed but will retry later:', error);
+      // Re-throw error only if not in silent mode
+      throw error;
     }
     
-    throw error;
+    // Silently handle error in silent mode
+    return null;
   }
 }
