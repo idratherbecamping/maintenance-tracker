@@ -62,45 +62,29 @@ export async function POST(request: NextRequest) {
     const baseItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.BASE_PRICE_ID);
     const vehicleItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.VEHICLE_PRICE_ID);
     
-    // Update subscription items
-    const updateItems = [];
-    
-    // Base item should always be quantity 1
-    if (baseItem) {
-      updateItems.push({
-        id: baseItem.id,
-        quantity: 1,
-      });
-    }
-    
-    // Handle vehicle item
+    // Handle subscription updates differently based on current state
     if (additionalVehicles > 0) {
       if (vehicleItem) {
-        // Update existing vehicle item
-        updateItems.push({
-          id: vehicleItem.id,
+        // Update existing vehicle item quantity
+        await BillingService.stripe.subscriptionItems.update(vehicleItem.id, {
           quantity: additionalVehicles,
+          proration_behavior: 'none',
         });
       } else {
-        // Add new vehicle item
-        updateItems.push({
+        // Add new vehicle subscription item
+        await BillingService.stripe.subscriptionItems.create({
+          subscription: company.stripe_subscription_id,
           price: STRIPE_CONFIG.VEHICLE_PRICE_ID,
           quantity: additionalVehicles,
+          proration_behavior: 'none',
         });
       }
     } else if (vehicleItem) {
-      // Remove vehicle item if no additional vehicles
-      updateItems.push({
-        id: vehicleItem.id,
-        deleted: true,
+      // Remove vehicle item if no additional vehicles needed
+      await BillingService.stripe.subscriptionItems.del(vehicleItem.id, {
+        proration_behavior: 'none',
       });
     }
-    
-    // Update the subscription
-    await BillingService.stripe.subscriptions.update(company.stripe_subscription_id, {
-      items: updateItems,
-      proration_behavior: 'none', // No proration - changes apply next cycle
-    });
 
     // Update database
     const { error: updateError } = await supabase
