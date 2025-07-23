@@ -58,20 +58,30 @@ export async function POST(request: NextRequest) {
       expand: ['items.data.price']
     });
     
+    console.log('Current subscription items:', subscription.items.data.map(item => ({
+      id: item.id,
+      price_id: item.price.id,
+      quantity: item.quantity
+    })));
+    
     // Find current subscription items
     const baseItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.BASE_PRICE_ID);
     const vehicleItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.VEHICLE_PRICE_ID);
     
+    console.log('Base item found:', !!baseItem, baseItem?.id);
+    console.log('Vehicle item found:', !!vehicleItem, vehicleItem?.id);
+    console.log('Additional vehicles needed:', additionalVehicles);
+    
     // Handle subscription updates differently based on current state
     if (additionalVehicles > 0) {
       if (vehicleItem) {
-        // Update existing vehicle item quantity
+        console.log('Updating existing vehicle item quantity to:', additionalVehicles);
         await BillingService.stripe.subscriptionItems.update(vehicleItem.id, {
           quantity: additionalVehicles,
           proration_behavior: 'none',
         });
       } else {
-        // Add new vehicle subscription item
+        console.log('Creating new vehicle subscription item with quantity:', additionalVehicles);
         await BillingService.stripe.subscriptionItems.create({
           subscription: company.stripe_subscription_id,
           price: STRIPE_CONFIG.VEHICLE_PRICE_ID,
@@ -80,10 +90,8 @@ export async function POST(request: NextRequest) {
         });
       }
     } else if (vehicleItem) {
-      // Remove vehicle item if no additional vehicles needed
-      await BillingService.stripe.subscriptionItems.del(vehicleItem.id, {
-        proration_behavior: 'none',
-      });
+      console.log('Removing vehicle item since no additional vehicles needed');
+      await BillingService.stripe.subscriptionItems.del(vehicleItem.id);
     }
 
     // Update database
