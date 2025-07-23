@@ -88,27 +88,16 @@ export function BillingInfo({ onUpdateVehicleCount }: BillingInfoProps) {
   };
 
   const handleManagePayment = async () => {
-    console.log('Manage Payment clicked, company:', company);
-    
-    if (!company?.stripe_customer_id) {
-      console.error('No stripe_customer_id found');
-      alert('No customer ID found. Please contact support.');
-      return;
-    }
+    if (!company?.stripe_customer_id) return;
 
     try {
-      console.log('Creating portal session...');
       const response = await fetch('/api/billing/create-portal-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
 
-      console.log('Portal response status:', response.status);
       const result = await response.json();
-      console.log('Portal response:', result);
-
       if (response.ok && result.url) {
-        console.log('Redirecting to:', result.url);
         window.location.href = result.url;
       } else {
         console.error('Portal session failed:', result);
