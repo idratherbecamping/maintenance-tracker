@@ -40,9 +40,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Billing already configured' }, { status: 400 });
     }
 
-    // Use the configured price IDs
-    const basePriceId = STRIPE_CONFIG.BASE_PRICE_ID; // $50 base
-    const vehiclePriceId = STRIPE_CONFIG.VEHICLE_PRICE_ID; // $5 per vehicle
+    // Use the new tiered pricing
+    const tieredPriceId = STRIPE_CONFIG.TIERED_PRICE_ID;
 
     // Validate discount code if provided
     let validCoupon = null;
@@ -82,33 +81,18 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Calculate subscription items
-    const additionalVehicles = Math.max(0, vehicleCount - 5);
-    const subscriptionItems = [
-      {
-        price: basePriceId, // $50 base price
-        quantity: 1,
-      }
-    ];
-
-    // Add additional vehicle charges if needed
-    if (additionalVehicles > 0) {
-      subscriptionItems.push({
-        price: vehiclePriceId, // $5 per additional vehicle
-        quantity: additionalVehicles,
-      });
-    }
-
-    // Create subscription with optional discount
+    // Create subscription with tiered pricing (single item)
     const subscriptionData = {
       customer: customer.id,
-      items: subscriptionItems,
+      items: [{
+        price: tieredPriceId,
+        quantity: vehicleCount, // Total vehicle count for tiered pricing
+      }],
       trial_period_days: 7,
       proration_behavior: 'none' as const,
       metadata: {
         company_id: profile.company_id,
         initial_vehicle_count: vehicleCount.toString(),
-        additional_vehicles: additionalVehicles.toString(),
       },
     };
 
@@ -119,19 +103,16 @@ export async function POST(request: NextRequest) {
 
     const subscription = await BillingService.stripe.subscriptions.create(subscriptionData);
 
-    // Get the base subscription item (for vehicle count updates)
-    const baseSubscriptionItem = subscription.items.data.find(item => 
-      item.price.id === basePriceId
-    );
-    const vehicleSubscriptionItem = subscription.items.data.find(item => 
-      item.price.id === vehiclePriceId
+    // Get the tiered subscription item (for vehicle count updates)
+    const tieredSubscriptionItem = subscription.items.data.find(item => 
+      item.price.id === tieredPriceId
     );
 
     // Update company with billing information including discount
     const updateData: any = {
       stripe_customer_id: customer.id,
       stripe_subscription_id: subscription.id,
-      stripe_subscription_item_id: baseSubscriptionItem?.id, // Store base item for updates
+      stripe_subscription_item_id: tieredSubscriptionItem?.id, // Store tiered item for updates
       subscription_status: subscription.status,
       trial_ends_at: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
       billing_email: billingEmail,

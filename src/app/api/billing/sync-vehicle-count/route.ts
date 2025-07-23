@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { BillingService, STRIPE_CONFIG } from '@/lib/stripe/server';
+import { BillingService, STRIPE_CONFIG, stripe } from '@/lib/stripe/server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     console.log('STRIPE_CONFIG.VEHICLE_PRICE_ID:', STRIPE_CONFIG.VEHICLE_PRICE_ID);
     
     // Get the current subscription to update vehicle pricing
-    const subscription = await BillingService.stripe.subscriptions.retrieve(company.stripe_subscription_id, {
+    const subscription = await stripe.subscriptions.retrieve(company.stripe_subscription_id, {
       expand: ['items.data.price']
     });
     
@@ -66,47 +66,56 @@ export async function POST(request: NextRequest) {
       quantity: item.quantity
     })));
     
-    // Find current subscription items
-    const baseItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.BASE_PRICE_ID);
-    const vehicleItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.VEHICLE_PRICE_ID);
+    // Find the tiered subscription item
+    const tieredItem = subscription.items.data.find(item => 
+      item.price.id === STRIPE_CONFIG.TIERED_PRICE_ID
+    );
     
-    console.log('Base item found:', !!baseItem, baseItem?.id);
-    console.log('Vehicle item found:', !!vehicleItem, vehicleItem?.id);
-    console.log('Additional vehicles needed:', additionalVehicles);
+    // Also check for legacy items (for existing subscriptions)
+    const baseItem = subscription.items.data.find(item => 
+      item.price.id === STRIPE_CONFIG.BASE_PRICE_ID
+    );
+    const vehicleItem = subscription.items.data.find(item => 
+      item.price.id === STRIPE_CONFIG.VEHICLE_PRICE_ID
+    );
     
-    // Handle metered billing - report usage instead of setting quantity
-    if (additionalVehicles > 0) {
-      if (vehicleItem) {
-        console.log('Reporting usage for existing vehicle item:', additionalVehicles);
-        // For metered billing, report usage record
-        await BillingService.stripe.subscriptionItems.createUsageRecord(vehicleItem.id, {
-          quantity: additionalVehicles,
-          timestamp: Math.floor(Date.now() / 1000),
-          action: 'set', // Set the usage to this exact amount
-        });
-      } else {
-        console.log('Creating new vehicle subscription item for metered billing');
-        const newVehicleItem = await BillingService.stripe.subscriptionItems.create({
-          subscription: company.stripe_subscription_id,
-          price: STRIPE_CONFIG.VEHICLE_PRICE_ID,
+    console.log('Tiered item found:', !!tieredItem, tieredItem?.id);
+    console.log('Legacy base item found:', !!baseItem, baseItem?.id);
+    console.log('Legacy vehicle item found:', !!vehicleItem, vehicleItem?.id);
+    console.log('Total vehicles:', actualVehicleCount);
+    
+    // Handle tiered pricing (single item with total vehicle count)
+    if (tieredItem) {
+      console.log('Updating tiered subscription item quantity to:', actualVehicleCount);
+      await stripe.subscriptionItems.update(tieredItem.id, {
+        quantity: actualVehicleCount,
+        proration_behavior: 'none',
+      });
+    } else {
+      // Handle legacy two-item pricing structure
+      console.log('Using legacy pricing structure');
+      if (additionalVehicles > 0) {
+        if (vehicleItem) {
+          console.log('Updating existing vehicle item quantity to:', additionalVehicles);
+          await stripe.subscriptionItems.update(vehicleItem.id, {
+            quantity: additionalVehicles,
+            proration_behavior: 'none',
+          });
+        } else {
+          console.log('Creating new vehicle subscription item with quantity:', additionalVehicles);
+          await stripe.subscriptionItems.create({
+            subscription: company.stripe_subscription_id,
+            price: STRIPE_CONFIG.VEHICLE_PRICE_ID,
+            quantity: additionalVehicles,
+            proration_behavior: 'none',
+          });
+        }
+      } else if (vehicleItem) {
+        console.log('Removing vehicle item since no additional vehicles needed');
+        await stripe.subscriptionItems.del(vehicleItem.id, {
           proration_behavior: 'none',
         });
-        
-        // Report initial usage
-        await BillingService.stripe.subscriptionItems.createUsageRecord(newVehicleItem.id, {
-          quantity: additionalVehicles,
-          timestamp: Math.floor(Date.now() / 1000),
-          action: 'set',
-        });
       }
-    } else if (vehicleItem) {
-      console.log('Setting vehicle usage to 0 since no additional vehicles needed');
-      // Set usage to 0 instead of deleting the item
-      await BillingService.stripe.subscriptionItems.createUsageRecord(vehicleItem.id, {
-        quantity: 0,
-        timestamp: Math.floor(Date.now() / 1000),
-        action: 'set',
-      });
     }
 
     // Update database
