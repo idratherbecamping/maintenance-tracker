@@ -135,13 +135,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       vehicleCount: actualVehicleCount,
-      billedQuantity: quantity,
+      billedQuantity: actualVehicleCount,
     });
 
   } catch (error) {
     console.error('Error syncing vehicle count:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    console.error('Environment check:');
+    console.error('STRIPE_TIERED_PRICE_ID:', process.env.STRIPE_TIERED_PRICE_ID);
+    console.error('STRIPE_CONFIG.TIERED_PRICE_ID:', STRIPE_CONFIG.TIERED_PRICE_ID);
+    
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      { 
+        error: error instanceof Error ? error.message : 'Internal server error',
+        debug: {
+          tieredPriceId: process.env.STRIPE_TIERED_PRICE_ID,
+          configTieredPriceId: STRIPE_CONFIG.TIERED_PRICE_ID
+        }
+      },
       { status: 500 }
     );
   }

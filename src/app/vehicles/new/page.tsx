@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { uploadImage, generateImagePath } from '@/lib/image-utils';
 import { Database } from '@/types/database';
+import { autoSyncVehicleCount } from '@/lib/billing/auto-sync';
 
 type VehicleInsert = Database['public']['Tables']['mt_vehicles']['Insert'];
 
@@ -62,6 +63,14 @@ export default function NewVehiclePage() {
       console.log('Vehicle submission - Insert error:', insertError);
       
       if (insertError) throw insertError;
+
+      // Auto-sync vehicle count with billing (silent mode)
+      try {
+        await autoSyncVehicleCount({ silent: true });
+      } catch (syncError) {
+        // Don't block vehicle creation if billing sync fails
+        console.warn('Billing sync failed after vehicle creation:', syncError);
+      }
 
       router.push('/vehicles');
     } catch (err) {

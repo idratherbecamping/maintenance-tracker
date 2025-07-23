@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { createClient } from '@/lib/supabase/client';
 import { uploadImage, deleteImage, generateImagePath } from '@/lib/image-utils';
 import { Database } from '@/types/database';
+import { autoSyncVehicleCount } from '@/lib/billing/auto-sync';
 
 type Vehicle = Database['public']['Tables']['mt_vehicles']['Row'];
 type VehicleUpdate = Database['public']['Tables']['mt_vehicles']['Update'];
@@ -96,6 +97,16 @@ export default function EditVehiclePage() {
         .eq('id', vehicleId);
 
       if (updateError) throw updateError;
+
+      // Auto-sync vehicle count if is_active status changed
+      const statusChanged = vehicleUpdateData.is_active !== vehicle?.is_active;
+      if (statusChanged) {
+        try {
+          await autoSyncVehicleCount({ silent: true });
+        } catch (syncError) {
+          console.warn('Billing sync failed after vehicle status change:', syncError);
+        }
+      }
 
       router.push(`/vehicles/${vehicleId}`);
     } catch (err) {
