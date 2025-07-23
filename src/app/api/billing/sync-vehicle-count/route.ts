@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
     const totalMonthlyAmount = 50 + (additionalVehicles * 5);
     
     console.log(`Vehicle count: ${actualVehicleCount}, Additional vehicles: ${additionalVehicles}, Total amount: $${totalMonthlyAmount}`);
+    console.log('STRIPE_CONFIG.BASE_PRICE_ID:', STRIPE_CONFIG.BASE_PRICE_ID);
+    console.log('STRIPE_CONFIG.VEHICLE_PRICE_ID:', STRIPE_CONFIG.VEHICLE_PRICE_ID);
     
     // Get the current subscription to update vehicle pricing
     const subscription = await BillingService.stripe.subscriptions.retrieve(company.stripe_subscription_id, {
