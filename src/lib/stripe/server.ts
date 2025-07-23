@@ -11,6 +11,8 @@ export { stripe };
 // Constants
 export const STRIPE_CONFIG = {
   PRODUCT_ID: process.env.STRIPE_PRODUCT_ID!,
+  BASE_PRICE_ID: process.env.STRIPE_BASE_PRICE_ID!, // $50 base price
+  VEHICLE_PRICE_ID: process.env.STRIPE_VEHICLE_PRICE_ID!, // $5 per vehicle
   WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET!,
   TRIAL_PERIOD_DAYS: 7,
   MINIMUM_VEHICLES: 5,

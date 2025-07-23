@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { BillingService } from '@/lib/stripe/server';
+import { BillingService, STRIPE_CONFIG } from '@/lib/stripe/server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       .eq('id', profile.company_id)
       .single();
 
-    if (!company?.stripe_subscription_item_id) {
+    if (!company?.stripe_subscription_id) {
       return NextResponse.json({ error: 'No active subscription found' }, { status: 400 });
     }
 
@@ -46,9 +46,61 @@ export async function POST(request: NextRequest) {
 
     const actualVehicleCount = vehicleCount || 0;
     
-    // Note: For now, we don't update Stripe quantity since we use a fixed-price model
-    // The pricing calculation is handled in the UI and billing logic
-    // TODO: Implement usage-based pricing updates if needed
+    // Calculate the additional vehicles beyond the base 5
+    const baseVehicles = 5;
+    const additionalVehicles = Math.max(0, actualVehicleCount - baseVehicles);
+    const totalMonthlyAmount = 50 + (additionalVehicles * 5);
+    
+    console.log(`Vehicle count: ${actualVehicleCount}, Additional vehicles: ${additionalVehicles}, Total amount: $${totalMonthlyAmount}`);
+    
+    // Get the current subscription to update vehicle pricing
+    const subscription = await BillingService.stripe.subscriptions.retrieve(company.stripe_subscription_id, {
+      expand: ['items.data.price']
+    });
+    
+    // Find current subscription items
+    const baseItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.BASE_PRICE_ID);
+    const vehicleItem = subscription.items.data.find(item => item.price.id === STRIPE_CONFIG.VEHICLE_PRICE_ID);
+    
+    // Update subscription items
+    const updateItems = [];
+    
+    // Base item should always be quantity 1
+    if (baseItem) {
+      updateItems.push({
+        id: baseItem.id,
+        quantity: 1,
+      });
+    }
+    
+    // Handle vehicle item
+    if (additionalVehicles > 0) {
+      if (vehicleItem) {
+        // Update existing vehicle item
+        updateItems.push({
+          id: vehicleItem.id,
+          quantity: additionalVehicles,
+        });
+      } else {
+        // Add new vehicle item
+        updateItems.push({
+          price: STRIPE_CONFIG.VEHICLE_PRICE_ID,
+          quantity: additionalVehicles,
+        });
+      }
+    } else if (vehicleItem) {
+      // Remove vehicle item if no additional vehicles
+      updateItems.push({
+        id: vehicleItem.id,
+        deleted: true,
+      });
+    }
+    
+    // Update the subscription
+    await BillingService.stripe.subscriptions.update(company.stripe_subscription_id, {
+      items: updateItems,
+      proration_behavior: 'none', // No proration - changes apply next cycle
+    });
 
     // Update database
     const { error: updateError } = await supabase

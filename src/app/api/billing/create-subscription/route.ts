@@ -40,16 +40,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Billing already configured' }, { status: 400 });
     }
 
-    // Get the price ID from the product
-    const product = await BillingService.stripe.products.retrieve(STRIPE_CONFIG.PRODUCT_ID, {
-      expand: ['default_price'],
-    });
-
-    if (!product.default_price || typeof product.default_price === 'string') {
-      throw new Error('Product does not have a default price');
-    }
-
-    const priceId = product.default_price.id;
+    // Use the configured price IDs
+    const basePriceId = STRIPE_CONFIG.BASE_PRICE_ID; // $50 base
+    const vehiclePriceId = STRIPE_CONFIG.VEHICLE_PRICE_ID; // $5 per vehicle
 
     // Validate discount code if provided
     let validCoupon = null;
@@ -89,18 +82,33 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Calculate subscription items
+    const additionalVehicles = Math.max(0, vehicleCount - 5);
+    const subscriptionItems = [
+      {
+        price: basePriceId, // $50 base price
+        quantity: 1,
+      }
+    ];
+
+    // Add additional vehicle charges if needed
+    if (additionalVehicles > 0) {
+      subscriptionItems.push({
+        price: vehiclePriceId, // $5 per additional vehicle
+        quantity: additionalVehicles,
+      });
+    }
+
     // Create subscription with optional discount
     const subscriptionData = {
       customer: customer.id,
-      items: [{
-        price: priceId,
-        quantity: 1, // Always quantity 1 - pricing is built into the product
-      }],
+      items: subscriptionItems,
       trial_period_days: 7,
       proration_behavior: 'none' as const,
       metadata: {
         company_id: profile.company_id,
         initial_vehicle_count: vehicleCount.toString(),
+        additional_vehicles: additionalVehicles.toString(),
       },
     };
 
@@ -111,13 +119,19 @@ export async function POST(request: NextRequest) {
 
     const subscription = await BillingService.stripe.subscriptions.create(subscriptionData);
 
-    const subscriptionItem = subscription.items.data[0];
+    // Get the base subscription item (for vehicle count updates)
+    const baseSubscriptionItem = subscription.items.data.find(item => 
+      item.price.id === basePriceId
+    );
+    const vehicleSubscriptionItem = subscription.items.data.find(item => 
+      item.price.id === vehiclePriceId
+    );
 
     // Update company with billing information including discount
     const updateData: any = {
       stripe_customer_id: customer.id,
       stripe_subscription_id: subscription.id,
-      stripe_subscription_item_id: subscriptionItem.id,
+      stripe_subscription_item_id: baseSubscriptionItem?.id, // Store base item for updates
       subscription_status: subscription.status,
       trial_ends_at: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
       billing_email: billingEmail,
