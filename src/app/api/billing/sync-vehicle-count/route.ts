@@ -45,13 +45,10 @@ export async function POST(request: NextRequest) {
     }
 
     const actualVehicleCount = vehicleCount || 0;
-    const quantity = Math.max(5, actualVehicleCount);
-
-    // Update Stripe subscription quantity
-    await BillingService.updateSubscriptionQuantity({
-      subscriptionItemId: company.stripe_subscription_item_id,
-      quantity,
-    });
+    
+    // Note: For now, we don't update Stripe quantity since we use a fixed-price model
+    // The pricing calculation is handled in the UI and billing logic
+    // TODO: Implement usage-based pricing updates if needed
 
     // Update database
     const { error: updateError } = await supabase

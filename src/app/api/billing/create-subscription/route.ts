@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       customer: customer.id,
       items: [{
         price: priceId,
-        quantity: Math.max(5, vehicleCount),
+        quantity: 1, // Always quantity 1 - pricing is built into the product
       }],
       trial_period_days: 7,
       proration_behavior: 'none' as const,
