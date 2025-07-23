@@ -87,8 +87,12 @@ export async function POST(request: NextRequest) {
     // Handle tiered pricing (single item with total vehicle count)
     if (tieredItem) {
       console.log('Updating tiered subscription item quantity to:', actualVehicleCount);
+      // Ensure minimum of 5 vehicles for the tiered pricing structure
+      const quantityToUpdate = Math.max(5, actualVehicleCount);
+      console.log('Quantity being set:', quantityToUpdate);
+      
       await stripe.subscriptionItems.update(tieredItem.id, {
-        quantity: actualVehicleCount,
+        quantity: quantityToUpdate,
         proration_behavior: 'none',
       });
     } else {
