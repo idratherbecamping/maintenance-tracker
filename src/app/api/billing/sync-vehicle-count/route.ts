@@ -74,26 +74,39 @@ export async function POST(request: NextRequest) {
     console.log('Vehicle item found:', !!vehicleItem, vehicleItem?.id);
     console.log('Additional vehicles needed:', additionalVehicles);
     
-    // Handle subscription updates differently based on current state
+    // Handle metered billing - report usage instead of setting quantity
     if (additionalVehicles > 0) {
       if (vehicleItem) {
-        console.log('Updating existing vehicle item quantity to:', additionalVehicles);
-        await BillingService.stripe.subscriptionItems.update(vehicleItem.id, {
+        console.log('Reporting usage for existing vehicle item:', additionalVehicles);
+        // For metered billing, report usage record
+        await BillingService.stripe.subscriptionItems.createUsageRecord(vehicleItem.id, {
           quantity: additionalVehicles,
-          proration_behavior: 'none',
+          timestamp: Math.floor(Date.now() / 1000),
+          action: 'set', // Set the usage to this exact amount
         });
       } else {
-        console.log('Creating new vehicle subscription item with quantity:', additionalVehicles);
-        await BillingService.stripe.subscriptionItems.create({
+        console.log('Creating new vehicle subscription item for metered billing');
+        const newVehicleItem = await BillingService.stripe.subscriptionItems.create({
           subscription: company.stripe_subscription_id,
           price: STRIPE_CONFIG.VEHICLE_PRICE_ID,
-          quantity: additionalVehicles,
           proration_behavior: 'none',
+        });
+        
+        // Report initial usage
+        await BillingService.stripe.subscriptionItems.createUsageRecord(newVehicleItem.id, {
+          quantity: additionalVehicles,
+          timestamp: Math.floor(Date.now() / 1000),
+          action: 'set',
         });
       }
     } else if (vehicleItem) {
-      console.log('Removing vehicle item since no additional vehicles needed');
-      await BillingService.stripe.subscriptionItems.del(vehicleItem.id);
+      console.log('Setting vehicle usage to 0 since no additional vehicles needed');
+      // Set usage to 0 instead of deleting the item
+      await BillingService.stripe.subscriptionItems.createUsageRecord(vehicleItem.id, {
+        quantity: 0,
+        timestamp: Math.floor(Date.now() / 1000),
+        action: 'set',
+      });
     }
 
     // Update database
