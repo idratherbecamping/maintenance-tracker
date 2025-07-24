@@ -11,6 +11,7 @@ export interface ReminderEmailData {
   dueDate: string;
   currentMileage?: number;
   targetMileage?: number;
+  vehicleId?: string;
 }
 
 export interface CompanyUser {
@@ -50,6 +51,11 @@ export async function sendReminderEmail(
 
   const emailSubject = `${priorityLabels[reminderData.priority]} Maintenance Reminder - ${reminderData.vehicleInfo}`;
   
+  // Generate dashboard URLs
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const dashboardUrl = `${baseUrl}/dashboard`;
+  const vehicleUrl = reminderData.vehicleId ? `${baseUrl}/vehicles/${reminderData.vehicleId}` : null;
+  
   const emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
@@ -76,6 +82,17 @@ export async function sendReminderEmail(
           <h3 style="margin: 0 0 10px 0; color: #92400e; font-size: 16px;">Description</h3>
           <p style="margin: 0; color: #92400e;">${reminderData.reminderDescription}</p>
         </div>
+      </div>
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <a href="${dashboardUrl}" style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 0 10px 10px 0;">
+          📊 View Dashboard
+        </a>
+        ${vehicleUrl ? `
+        <a href="${vehicleUrl}" style="display: inline-block; background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin: 0 10px 10px 0;">
+          🚗 View Vehicle Details
+        </a>
+        ` : ''}
       </div>
       
       <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; text-align: center;">

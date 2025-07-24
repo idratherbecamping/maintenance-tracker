@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
       priority: 'high',
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
       currentMileage: 45000,
-      targetMileage: 50000
+      targetMileage: 50000,
+      vehicleId: 'test-vehicle-123'
     };
 
     await sendReminderEmail(testUsers, testReminderData);
