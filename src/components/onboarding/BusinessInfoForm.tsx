@@ -57,7 +57,7 @@ export function BusinessInfoForm({ initialData, onSubmit, loading }: BusinessInf
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold mb-4">Business Information</h2>
-        <p className="text-gray-600 mb-6">Tell us about your company</p>
+        <p className="text-gray-900 mb-6">Tell us about your company</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

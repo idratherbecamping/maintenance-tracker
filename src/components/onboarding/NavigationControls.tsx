@@ -34,7 +34,7 @@ export function NavigationControls({
           <button
             onClick={onPrevious}
             disabled={loading}
-            className="px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50"
+            className="px-4 py-2 text-gray-900 hover:text-gray-900 disabled:opacity-50"
           >
             Previous
           </button>
@@ -46,7 +46,7 @@ export function NavigationControls({
           <button
             onClick={onSkip}
             disabled={loading}
-            className="px-4 py-2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
+            className="px-4 py-2 text-gray-900 hover:text-gray-700 disabled:opacity-50"
           >
             Skip this step
           </button>

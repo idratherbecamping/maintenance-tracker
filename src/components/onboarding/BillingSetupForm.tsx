@@ -191,7 +191,7 @@ function BillingSetupFormContent({ initialData, onSubmit, loading }: BillingSetu
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Billing Setup</h2>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-gray-900">
           Set up your payment method and vehicle count to get started
         </p>
       </div>
@@ -213,7 +213,7 @@ function BillingSetupFormContent({ initialData, onSubmit, loading }: BillingSetu
           {errors.vehicleCount && (
             <p className="mt-1 text-sm text-red-600">{errors.vehicleCount.message}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-900">
             Minimum 5 vehicles. You can add more vehicles later.
           </p>
         </div>
@@ -279,7 +279,7 @@ function BillingSetupFormContent({ initialData, onSubmit, loading }: BillingSetu
               <span>
                 {discountedAmount !== null ? (
                   <>
-                    <span className="line-through text-gray-500">${monthlyAmount.toFixed(2)}</span>{' '}
+                    <span className="line-through text-gray-900">${monthlyAmount.toFixed(2)}</span>{' '}
                     <span className="text-green-700">${discountedAmount.toFixed(2)}</span>/month
                   </>
                 ) : (
@@ -309,7 +309,7 @@ function BillingSetupFormContent({ initialData, onSubmit, loading }: BillingSetu
           {errors.billingEmail && (
             <p className="mt-1 text-sm text-red-600">{errors.billingEmail.message}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-900">
             Invoices and billing updates will be sent to this email.
           </p>
         </div>
@@ -328,7 +328,7 @@ function BillingSetupFormContent({ initialData, onSubmit, loading }: BillingSetu
           {cardError && (
             <p className="mt-1 text-sm text-red-600">{cardError}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-gray-900">
             Your payment information is secured by Stripe. We don't store card details.
           </p>
         </div>
@@ -368,7 +368,7 @@ export function BillingSetupForm(props: BillingSetupFormProps) {
     return (
       <div className="flex justify-center items-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">Loading payment form...</span>
+        <span className="ml-2 text-gray-900">Loading payment form...</span>
       </div>
     );
   }

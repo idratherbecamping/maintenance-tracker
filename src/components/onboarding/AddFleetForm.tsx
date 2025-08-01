@@ -58,7 +58,7 @@ export function AddFleetForm({ onSubmit, loading }: AddFleetFormProps) {
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold mb-4">Add Your Fleet</h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-900 mb-6">
           Add your vehicles to start tracking their maintenance. You can always add more vehicles later.
         </p>
       </div>
@@ -76,9 +76,9 @@ export function AddFleetForm({ onSubmit, loading }: AddFleetFormProps) {
                   {vehicle.year} {vehicle.make} {vehicle.model}
                 </p>
                 {vehicle.license_plate && (
-                  <p className="text-sm text-gray-600">License: {vehicle.license_plate}</p>
+                  <p className="text-sm text-gray-900">License: {vehicle.license_plate}</p>
                 )}
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-900">
                   Current Mileage: {vehicle.current_mileage.toLocaleString()} miles
                 </p>
               </div>
@@ -188,7 +188,7 @@ export function AddFleetForm({ onSubmit, loading }: AddFleetFormProps) {
                 });
                 setShowAddForm(false);
               }}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
+              className="px-4 py-2 text-gray-900 hover:text-gray-900"
               disabled={loading}
             >
               Cancel
@@ -209,7 +209,7 @@ export function AddFleetForm({ onSubmit, loading }: AddFleetFormProps) {
       )}
 
       {vehicles.length === 0 && !showAddForm && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-900">
           <p>No vehicles added yet.</p>
           <p className="text-sm mt-2">You can always add vehicles later from the fleet page.</p>
         </div>

@@ -42,7 +42,7 @@ export default function LoginPage() {
 
   if (!mounted) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-gray-600">Loading...</div>
+      <div className="text-gray-900">Loading...</div>
     </div>;
   }
 
@@ -67,7 +67,7 @@ export default function LoginPage() {
               )}
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-900">
                   Email address
                 </label>
                 <div className="mt-1">
@@ -85,7 +85,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-900">
                   Password
                 </label>
                 <div className="mt-1">

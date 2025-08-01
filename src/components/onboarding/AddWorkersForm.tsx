@@ -49,7 +49,7 @@ export function AddWorkersForm({ onSubmit, loading }: AddWorkersFormProps) {
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold mb-4">Add Team Members</h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-900 mb-6">
           Invite your team members to access the maintenance tracker. They'll receive an email invitation.
         </p>
       </div>
@@ -64,9 +64,9 @@ export function AddWorkersForm({ onSubmit, loading }: AddWorkersFormProps) {
             >
               <div>
                 <p className="font-medium">{worker.name}</p>
-                <p className="text-sm text-gray-600">{worker.email}</p>
+                <p className="text-sm text-gray-900">{worker.email}</p>
                 {worker.phone && (
-                  <p className="text-sm text-gray-500">{worker.phone}</p>
+                  <p className="text-sm text-gray-900">{worker.phone}</p>
                 )}
               </div>
               <button
@@ -140,7 +140,7 @@ export function AddWorkersForm({ onSubmit, loading }: AddWorkersFormProps) {
                 reset();
                 setShowAddForm(false);
               }}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900"
+              className="px-4 py-2 text-gray-900 hover:text-gray-900"
               disabled={loading}
             >
               Cancel
@@ -159,7 +159,7 @@ export function AddWorkersForm({ onSubmit, loading }: AddWorkersFormProps) {
       )}
 
       {workers.length === 0 && !showAddForm && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-900">
           <p>No team members added yet.</p>
           <p className="text-sm mt-2">You can always add team members later from the settings.</p>
         </div>

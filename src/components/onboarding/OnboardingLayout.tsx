@@ -32,11 +32,11 @@ export function OnboardingLayout({
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Welcome! Let's set up your account</h1>
-            <p className="text-gray-600 mt-1">Complete these steps to get the most out of your maintenance tracker</p>
+            <p className="text-gray-900 mt-1">Complete these steps to get the most out of your maintenance tracker</p>
           </div>
           <button
             onClick={handleSkipAll}
-            className="text-gray-500 hover:text-gray-700 text-sm underline"
+            className="text-gray-900 hover:text-black text-sm underline"
           >
             Skip setup
           </button>

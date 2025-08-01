@@ -43,7 +43,7 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
           />
           <div className="hidden h-48 bg-gray-100 flex items-center justify-center">
             <svg
-              className="h-12 w-12 text-gray-400"
+              className="h-12 w-12 text-gray-900"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -60,7 +60,7 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
       ) : (
         <div className="h-48 bg-gray-100 flex items-center justify-center">
           <svg
-            className="h-12 w-12 text-gray-400"
+            className="h-12 w-12 text-gray-900"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -83,13 +83,13 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
             </h3>
             <div className="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:space-x-6">
               {vehicle.license_plate && (
-                <div className="mt-2 flex items-center text-sm text-gray-500">
+                <div className="mt-2 flex items-center text-sm text-gray-900">
                   <span className="font-medium">License:</span>
                   <span className="ml-1">{vehicle.license_plate}</span>
                 </div>
               )}
               {vehicle.vin && (
-                <div className="mt-2 flex items-center text-sm text-gray-500">
+                <div className="mt-2 flex items-center text-sm text-gray-900">
                   <span className="font-medium">VIN:</span>
                   <span className="ml-1 truncate">{vehicle.vin}</span>
                 </div>
@@ -100,7 +100,7 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
             <div className="relative">
               <button
                 type="button"
-                className="bg-white rounded-full flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="bg-white rounded-full flex items-center text-gray-900 hover:text-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 onClick={() => onDelete(vehicle.id)}
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,18 +118,18 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
 
         <div className="mt-4 grid grid-cols-2 gap-4">
           <div>
-            <dt className="text-sm font-medium text-gray-500">Current Mileage</dt>
+            <dt className="text-sm font-medium text-gray-900">Current Mileage</dt>
             <dd className="mt-1 text-sm text-gray-900">
               {formatNumber(vehicle.current_mileage)} mi
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">Asset Value</dt>
+            <dt className="text-sm font-medium text-gray-900">Asset Value</dt>
             <dd className="mt-1 text-sm text-gray-900">{formatCurrency(vehicle.asset_value)}</dd>
           </div>
           {vehicle.purchase_date && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">Purchase Date</dt>
+              <dt className="text-sm font-medium text-gray-900">Purchase Date</dt>
               <dd className="mt-1 text-sm text-gray-900">
                 {new Date(vehicle.purchase_date).toLocaleDateString()}
               </dd>
@@ -137,7 +137,7 @@ export function VehicleCard({ vehicle, onDelete }: VehicleCardProps) {
           )}
           {vehicle.purchase_price && (
             <div>
-              <dt className="text-sm font-medium text-gray-500">Purchase Price</dt>
+              <dt className="text-sm font-medium text-gray-900">Purchase Price</dt>
               <dd className="mt-1 text-sm text-gray-900">
                 {formatCurrency(vehicle.purchase_price)}
               </dd>

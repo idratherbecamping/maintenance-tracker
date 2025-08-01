@@ -19,7 +19,7 @@ export function ReviewComplete({
     <div className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold mb-4">Setup Complete!</h2>
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-900 mb-6">
           Great job! You've successfully set up your maintenance tracking account.
         </p>
       </div>

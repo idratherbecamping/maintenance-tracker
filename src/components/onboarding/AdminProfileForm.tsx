@@ -32,7 +32,7 @@ export function AdminProfileForm({ initialData, onSubmit, loading }: AdminProfil
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <h2 className="text-lg font-semibold mb-4">Admin Profile</h2>
-        <p className="text-gray-600 mb-6">Update your personal information</p>
+        <p className="text-gray-900 mb-6">Update your personal information</p>
       </div>
 
       <div className="space-y-4">

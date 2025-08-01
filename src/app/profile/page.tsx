@@ -126,7 +126,7 @@ export default function ProfilePage() {
             <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-2 text-sm text-gray-500">Loading profile...</p>
+                <p className="mt-2 text-sm text-gray-900">Loading profile...</p>
               </div>
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function ProfilePage() {
               <h1 className="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
                 Settings
               </h1>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-900">
                 Manage your account information, billing, and preferences.
               </p>
             </div>
@@ -170,7 +170,7 @@ export default function ProfilePage() {
                       className={`py-2 px-1 border-b-2 font-medium text-sm ${
                         activeTab === 'profile'
                           ? 'border-blue-500 text-blue-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          : 'border-transparent text-gray-900 hover:text-gray-900 hover:border-gray-300'
                       }`}
                     >
                       Profile
@@ -181,7 +181,7 @@ export default function ProfilePage() {
                         className={`py-2 px-1 border-b-2 font-medium text-sm ${
                           activeTab === 'billing'
                             ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            : 'border-transparent text-gray-900 hover:text-gray-900 hover:border-gray-300'
                         }`}
                       >
                         Billing
@@ -220,7 +220,7 @@ export default function ProfilePage() {
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                       <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-900">
                           Full Name
                         </label>
                         <input
@@ -234,7 +234,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-900">
                           Email Address
                         </label>
                         <input
@@ -267,7 +267,7 @@ export default function ProfilePage() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Role</label>
+                        <label className="block text-sm font-medium text-gray-900">Role</label>
                         <div className="mt-1">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
@@ -282,9 +282,9 @@ export default function ProfilePage() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Company ID</label>
+                        <label className="block text-sm font-medium text-gray-900">Company ID</label>
                         <div className="mt-1">
-                          <code className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                          <code className="text-sm text-gray-900 bg-gray-100 px-2 py-1 rounded">
                             {profile.company_id}
                           </code>
                         </div>
@@ -300,19 +300,19 @@ export default function ProfilePage() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
+                        <label className="block text-sm font-medium text-gray-900">Password</label>
                         <div className="mt-1 flex items-center space-x-4">
-                          <span className="text-sm text-gray-500">••••••••</span>
+                          <span className="text-sm text-gray-900">••••••••</span>
                           <button
                             type="button"
                             onClick={handleChangePassword}
                             disabled={loading}
-                            className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-900 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             Change Password
                           </button>
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-gray-900">
                           We'll send you a password reset link to your email.
                         </p>
                       </div>

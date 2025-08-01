@@ -35,7 +35,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                       ? 'border-blue-600 bg-blue-600 text-white'
                       : step.id === currentStep
                       ? 'border-blue-600 bg-white text-blue-600'
-                      : 'border-gray-200 bg-white text-gray-400'
+                      : 'border-gray-200 bg-white text-gray-900'
                   }`}
                 >
                   {step.id < currentStep ? (
@@ -54,12 +54,12 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
               <div className="mt-2 text-center">
                 <p
                   className={`text-sm font-medium ${
-                    step.id === currentStep ? 'text-gray-900' : 'text-gray-500'
+                    step.id === currentStep ? 'text-gray-900' : 'text-gray-900'
                   }`}
                 >
                   {step.name}
                 </p>
-                <p className="text-xs text-gray-400 mt-1 hidden sm:block">
+                <p className="text-xs text-gray-900 mt-1 hidden sm:block">
                   {step.description}
                 </p>
               </div>

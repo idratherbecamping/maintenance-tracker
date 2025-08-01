@@ -94,7 +94,7 @@ export function RecentMaintenanceList({ companyId }: RecentMaintenanceListProps)
     return (
       <div className="text-center py-8">
         <svg
-          className="mx-auto h-12 w-12 text-gray-400"
+          className="mx-auto h-12 w-12 text-gray-900"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -107,7 +107,7 @@ export function RecentMaintenanceList({ companyId }: RecentMaintenanceListProps)
           />
         </svg>
         <h3 className="mt-2 text-sm font-medium text-gray-900">No maintenance records</h3>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-900">
           Get started by logging your first maintenance record.
         </p>
         <div className="mt-4">
@@ -166,7 +166,7 @@ export function RecentMaintenanceList({ companyId }: RecentMaintenanceListProps)
             </div>
 
             <div className="flex items-center space-x-2 mt-1">
-              <p className="text-sm text-gray-500 truncate">
+              <p className="text-sm text-gray-900 truncate">
                 {record.mt_vehicles && (
                   <>
                     {record.mt_vehicles.year} {record.mt_vehicles.make} {record.mt_vehicles.model}
@@ -174,9 +174,9 @@ export function RecentMaintenanceList({ companyId }: RecentMaintenanceListProps)
                 )}
               </p>
               <span className="text-gray-300">•</span>
-              <p className="text-sm text-gray-500">{formatNumber(record.mileage)} mi</p>
+              <p className="text-sm text-gray-900">{formatNumber(record.mileage)} mi</p>
               <span className="text-gray-300">•</span>
-              <p className="text-sm text-gray-500">{new Date(record.date).toLocaleDateString()}</p>
+              <p className="text-sm text-gray-900">{new Date(record.date).toLocaleDateString()}</p>
             </div>
           </div>
         </div>
