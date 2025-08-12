@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [mounted, setMounted] = useState(false);
   const { signIn } = useAuth();
   const router = useRouter();
@@ -18,6 +19,15 @@ export default function LoginPage() {
 
   useEffect(() => {
     setMounted(true);
+    
+    // Check for success message from password setup
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    if (message) {
+      setSuccess(message);
+      // Clean up URL
+      window.history.replaceState({}, '', '/login');
+    }
   }, []);
 
   const fillDemoCredentials = () => {
@@ -63,6 +73,12 @@ export default function LoginPage() {
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
                   {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded">
+                  {success}
                 </div>
               )}
 

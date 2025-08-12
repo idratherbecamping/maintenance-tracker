@@ -53,13 +53,20 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${requestUrl.origin}/login?error=auth_failed`)
       }
 
-      // Check if this is a password reset flow
+      // Check if this is a password reset flow or invitation flow
       console.log('Auth callback: Type check:', type)
+      console.log('Auth callback: User metadata:', data.user?.user_metadata)
       
       if (type === 'recovery') {
         console.log('Auth callback: Password reset flow, redirecting to reset-password')
         // For password reset, session is already established after code exchange
         return NextResponse.redirect(`${requestUrl.origin}/reset-password`)
+      }
+      
+      // Check if this is a new user invitation (they'll have is_employee in metadata but no password set)
+      if (data.user?.user_metadata?.is_employee && next === '/set-password') {
+        console.log('Auth callback: New employee invitation, redirecting to set-password')
+        return NextResponse.redirect(`${requestUrl.origin}/set-password`)
       }
 
       console.log('Auth callback: Normal login flow, redirecting to:', next)

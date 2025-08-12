@@ -112,20 +112,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log('Auth: First-time login detected');
             
             if (session.user.user_metadata?.is_employee) {
-              console.log('Auth: Creating employee profile');
               await createEmployeeProfile(session.user);
+              
+              // Fetch the newly created profile
+              const { data: newProfile, error: fetchError } = await supabase
+                .from('mt_users')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+                
+              if (newProfile) {
+                setProfile(newProfile);
+              } else {
+                console.error('Auth: Failed to fetch new profile:', fetchError);
+                setProfile(null);
+              }
             } else {
               console.log('Auth: Creating company and admin profile');
               await createCompanyAndProfile(session.user);
-            }
-            
-            // Retry fetching the profile via API
-            const retryResponse = await fetch(`/api/debug-profile?userId=${session.user.id}`);
-            const retryResult = await retryResponse.json();
-            
-            if (retryResult.success && retryResult.profile) {
-              console.log('Auth: New profile created:', retryResult.profile);
-              setProfile(retryResult.profile);
+              
+              // Retry fetching the profile via API for admin users
+              const retryResponse = await fetch(`/api/debug-profile?userId=${session.user.id}`);
+              const retryResult = await retryResponse.json();
+              
+              if (retryResult.success && retryResult.profile) {
+                console.log('Auth: New profile created:', retryResult.profile);
+                setProfile(retryResult.profile);
+              }
             }
           } else {
             setProfile(profileData);
@@ -208,12 +221,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const createEmployeeProfile = async (user: any) => {
     try {
-      console.log('Auth: Creating employee profile for user:', {
-        id: user.id,
-        email: user.email,
-        metadata: user.user_metadata
-      });
-
       const userName = user.user_metadata?.name || user.email.split('@')[0];
       const companyId = user.user_metadata?.company_id;
 
@@ -221,7 +228,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('No company ID found in user metadata');
       }
 
-      // Create employee profile directly
       const { error: userError } = await supabase.from('mt_users').insert({
         id: user.id,
         email: user.email,
@@ -231,8 +237,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (userError) throw userError;
-
-      console.log('Auth: Employee profile created successfully');
     } catch (error) {
       console.error('Auth: Error creating employee profile:', error);
     }

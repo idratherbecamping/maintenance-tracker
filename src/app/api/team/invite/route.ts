@@ -24,34 +24,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Company not found' }, { status: 404 });
     }
 
-    // Create user with temporary password that they'll need to reset
-    const tempPassword = Math.random().toString(36).slice(-8) + 'Temp123!';
-    
-    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    // Use Supabase's built-in invitation system
+    const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(
       email,
-      password: tempPassword,
-      email_confirm: true, // Auto-confirm for development
-      user_metadata: {
-        name,
-        company_id: companyId,
-        company_name: companyData.name,
-        is_employee: true,
+      {
+        data: {
+          name,
+          company_id: companyId,
+          company_name: companyData.name,
+          is_employee: true,
+          role: 'employee'
+        },
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/set-password`
       }
-    });
+    );
 
     if (error) {
       console.error('Team API: Invite error:', error);
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.log('Team API: Employee invitation sent successfully');
+    console.log('Team API: Employee invitation sent successfully to:', email);
 
     return NextResponse.json({ 
       success: true, 
-      message: `Employee account created successfully`,
+      message: `Invitation sent to ${email}`,
       user: data.user,
-      temporaryPassword: tempPassword,
-      loginInstructions: `Account created for ${email}. Temporary password: ${tempPassword}. Please have them login and change their password.`
+      emailSent: true
     });
 
   } catch (error) {

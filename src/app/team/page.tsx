@@ -79,22 +79,21 @@ export default function TeamPage() {
         throw new Error(result.error || 'Failed to send invitation');
       }
 
-      if (result.temporaryPassword) {
+      if (result.emailSent) {
         setSuccess(
           <div>
-            <p className="font-semibold mb-2">Employee account created successfully!</p>
-            <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mt-2">
-              <p className="text-sm mb-1">Share these credentials with {inviteData.name}:</p>
-              <p className="font-mono text-sm">
-                <strong>Email:</strong> {inviteData.email}<br />
-                <strong>Temporary Password:</strong> <span className="bg-yellow-200 px-1">{result.temporaryPassword}</span>
+            <p className="font-semibold mb-2">Invitation sent successfully!</p>
+            <div className="bg-green-50 border border-green-200 rounded p-3 mt-2">
+              <p className="text-sm mb-1">✉️ An invitation email has been sent to:</p>
+              <p className="font-medium text-green-800">{inviteData.email}</p>
+              <p className="text-xs mt-2 text-green-700">
+                They'll receive a link to set up their password and access the system.
               </p>
-              <p className="text-xs mt-2 text-yellow-700">⚠️ Please ask them to change their password after first login</p>
             </div>
           </div>
         );
       } else {
-        setSuccess(`Account created for ${inviteData.email}!`);
+        setSuccess(`Invitation sent to ${inviteData.email}!`);
       }
       setInviteData({ name: '', email: '' });
       setShowInviteForm(false);
@@ -197,7 +196,7 @@ export default function TeamPage() {
                       disabled={inviteLoading}
                       className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
                     >
-                      {inviteLoading ? 'Sending...' : 'Send Invitation'}
+                      {inviteLoading ? 'Sending invitation email...' : 'Send Invitation'}
                     </button>
                     <button
                       type="button"
